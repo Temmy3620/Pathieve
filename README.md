@@ -1,37 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Name
 
-## Getting Started
+このプロジェクトは Next.js で構築されており、フロントエンドだけでなくバックエンドAPIも実装されています。
 
-First, run the development server:
+## 🛠 セットアップ手順
 
+### 1. 初期化スクリプトの実行
+リポジトリをクローン後、最初に実行してください。
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+chmod +x init.sh
+./init.sh
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. 環境変数の設定
+.env ファイルを開き、データベース接続URLを正しい値に書き換えてください。
+APIの動作にデータベースが必要なため、この設定が必須です。
+```
+DATABASE_URL="mysql://ユーザー名:パスワード@localhost:5432/データベース名"
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🗄 データベース操作 (Prisma)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+本プロジェクトでは ORM に **Prisma** を使用しています。`.env` の設定完了後、以下のコマンドを使用してください。
 
-## Learn More
+### 1. マイグレーションの実行
+スキーマの変更をデータベースに反映します。初回セットアップ時や `schema.prisma` を編集した後に実行してください。
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx prisma migrate dev --name init
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. シードデータの投入
+テスト用の初期データをデータベースに挿入します。
+```
+npx prisma db seed
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. データベースの中身を確認する (Prisma Studio)
+ブラウザベースの GUI ツールで、DBのレコードを直接確認・編集できます。
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# Pathieve
+```bash
+npx prisma studio
+```
+実行後、 http://localhost:5555 にアクセスすると、テーブルごとのデータを GUI で操作できます。
