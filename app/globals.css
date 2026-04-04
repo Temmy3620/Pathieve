@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────
+   Design Tokens (Light mode default = always applied)
+   Dark mode override via [data-theme="dark"]
+────────────────────────────────────────── */
+:root {
+  /* Brand accent — always Indigo unless overridden */
+  --accent:       #6366f1;
+  --accent-light: #818cf8;
+  --accent-dark:  #4f46e5;
+
+  /* Layout backgrounds */
+  --bg-base:    #eeeeff;
+  --bg-surface: #ffffff;
+  --bg-raised:  #f4f3ff;
+  --bg-muted:   #e8e7f5;
+
+  /* Text */
+  --text-primary:   #1a1a2e;
+  --text-secondary: #4a4a6a;
+  --text-muted:     #8888aa;
+  --text-inverse:   #ffffff;
+
+  /* Goal level colors */
+  --goal-5year:  #6366f1;
+  --goal-1year:  #f59e0b;
+  --goal-1month: #64748b;
+
+  /* Status */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger:  #ef4444;
+
+  /* Border */
+  --border:       #d8d7f0;
+  --border-focus: #6366f1;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 3px rgba(99,102,241,0.10);
+  --shadow-md: 0 4px 16px rgba(99,102,241,0.14);
+  --shadow-lg: 0 8px 32px rgba(99,102,241,0.18);
+
+  /* Nav */
+  --sidebar-w: 200px;
+}
+
+/* ── Accent overrides ──────────────────── */
+[data-accent="purple"] { --accent: #a855f7; --accent-light: #c084fc; --accent-dark: #9333ea; }
+[data-accent="teal"]   { --accent: #14b8a6; --accent-light: #2dd4bf; --accent-dark: #0d9488; }
+[data-accent="rose"]   { --accent: #f43f5e; --accent-light: #fb7185; --accent-dark: #e11d48; }
+[data-accent="sky"]    { --accent: #0ea5e9; --accent-light: #38bdf8; --accent-dark: #0284c7; }
+
+/* ── Dark mode ─────────────────────────── */
+[data-theme="dark"] {
+  --bg-base:    #0f0f1a;
+  --bg-surface: #1a1a2e;
+  --bg-raised:  #22223a;
+  --bg-muted:   #2a2a44;
+
+  --text-primary:   #e8e8f5;
+  --text-secondary: #a0a0c0;
+  --text-muted:     #6060a0;
+
+  --goal-1month: #64748b;
+  --border:       #2e2e50;
+  --border-focus: #818cf8;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.6);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.7);
+}
+
+/* ──────────────────────────────────────────
+   Base Reset
+────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Force explicit light background — not system default */
+html, body {
+  background-color: #eeeeff !important;
+  color: #1a1a2e !important;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Dark mode body override */
+[data-theme="dark"] body,
+[data-theme="dark"] html {
+  background-color: #0f0f1a !important;
+  color: #e8e8f5 !important;
+}
+
+/* ──────────────────────────────────────────
+   Scrollbar
+────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d8d7f0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9999bb; }
+
+/* ──────────────────────────────────────────
+   Animations
+────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in  { animation: fadeIn  0.3s ease both; }
+.animate-scale-in { animation: scaleIn 0.25s ease both; }

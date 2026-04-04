@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(uuid()) @db.VarChar(36)
+  email           String   @unique @db.VarChar(255)
+  hashed_password String   @db.VarChar(255)
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now())
+
+  goals Goal[]
+
+  @@map("users")
+}
+
+model Goal {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  user_id    String   @db.VarChar(36)
+  title      String   @db.VarChar(512)
+  level      String   // Map to Enum if you want, but String is safer across migrations. Let's keep it String.
+  parent_id  String?  @db.VarChar(36)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  owner    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  parent   Goal?  @relation("GoalHierarchy", fields: [parent_id], references: [id], onDelete: SetNull)
+  children Goal[] @relation("GoalHierarchy")
+  tasks    Task[]
+
+  @@index([user_id])
+  @@index([parent_id])
+  @@map("goals")
+}
+
+model Task {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  goal_id    String   @db.VarChar(36)
+  title      String   @db.VarChar(512)
+  memo       String   @default("") @db.VarChar(1024)
+  progress   Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  goal Goal @relation(fields: [goal_id], references: [id], onDelete: Cascade)
+
+  @@index([goal_id])
+  @@map("tasks")
+}
