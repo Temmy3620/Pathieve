@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { useTheme } from '@/context/ThemeContext'
 import { useGoals } from '@/context/GoalContext'
 
@@ -10,6 +11,31 @@ const navItems = [
   { href: '/achievement', label: 'Achievement Log', icon: '🏆' },
   { href: '/settings', label: 'Setting', icon: '⚙️' },
 ]
+
+function TaskBoardSubMenu({ monthGoals }: { monthGoals: any[] }) {
+  const searchParams = useSearchParams()
+  const currentGoalId = searchParams.get('goal') || (monthGoals.length > 0 ? monthGoals[0].id : null)
+
+  return (
+    <div style={{ paddingLeft: 32 }}>
+      {monthGoals.map((g) => {
+        const isActive = currentGoalId === g.id
+        return (
+          <Link key={g.id} href={`/taskboard?goal=${g.id}`} style={{
+            display: 'block', padding: '6px 8px', marginBottom: 2,
+            fontSize: '0.76rem', color: isActive ? '#6366f1' : '#8888aa',
+            textDecoration: 'none', borderRadius: 6,
+            fontWeight: isActive ? 700 : 500,
+            background: isActive ? 'rgba(99,102,241,0.1)' : 'transparent',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
+            {isActive ? '✦' : '▸'} {g.title}
+          </Link>
+        )
+      })}
+    </div>
+  )
+}
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -72,18 +98,9 @@ export default function Sidebar() {
               </Link>
 
               {href === '/taskboard' && active && monthGoals.length > 0 && (
-                <div style={{ paddingLeft: 32 }}>
-                  {monthGoals.map((g) => (
-                    <Link key={g.id} href={`/taskboard?goal=${g.id}`} style={{
-                      display: 'block', padding: '5px 8px',
-                      fontSize: '0.76rem', color: '#8888aa',
-                      textDecoration: 'none', borderRadius: 6,
-                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    }}>
-                      ▸ {g.title}
-                    </Link>
-                  ))}
-                </div>
+                <Suspense fallback={<div style={{ paddingLeft: 32, fontSize: '0.76rem', color: '#8888aa' }}>読み込み中...</div>}>
+                  <TaskBoardSubMenu monthGoals={monthGoals} />
+                </Suspense>
               )}
             </div>
           )
