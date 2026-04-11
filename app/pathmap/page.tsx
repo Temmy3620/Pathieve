@@ -139,7 +139,7 @@ const COLUMNS = [
 // ── Main page ────────────────────────────────────────────
 export default function PathMapPage() {
   const router = useRouter()
-  const { goals, tasks, isLoading, checkAuth, refreshData } = useGoals()
+  const { goals, tasks, isInitialized, checkAuth, refreshData } = useGoals()
   const [addModal, setAddModal] = useState<{ level: Goal['level']; parentId: string | null } | null>(null)
   const [lines, setLines] = useState<Line[]>([])
   const gridRef = useRef<HTMLDivElement>(null)
@@ -199,7 +199,7 @@ export default function PathMapPage() {
           ))}
         </div>
 
-        {isLoading ? (
+        {!isInitialized ? (
           <div style={{ color: '#8888aa', textAlign: 'center', paddingTop: 60 }}>読み込み中...</div>
         ) : (
           /* Grid + SVG overlay */

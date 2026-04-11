@@ -12,7 +12,7 @@ import Input from '@/components/ui/Input'
 export default function TaskBoardPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { goals, tasks, isLoading, checkAuth, refreshData, createTask } = useGoals()
+  const { goals, tasks, isInitialized, checkAuth, refreshData, createTask } = useGoals()
 
   const [activeGoalId, setActiveGoalId] = useState<string | null>(null)
   const [addModal, setAddModal] = useState(false)
@@ -64,7 +64,7 @@ export default function TaskBoardPage() {
         <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1a1a2e', margin: '0 0 4px', letterSpacing: '-0.02em' }}>Task Board</h1>
         <p style={{ color: '#8888aa', fontSize: '0.83rem', margin: '0 0 24px' }}>1ヶ月ごとのタスクを管理する</p>
 
-        {isLoading ? (
+        {!isInitialized ? (
           <div style={{ color: '#8888aa', textAlign: 'center', paddingTop: 60 }}>読み込み中...</div>
         ) : monthGoals.length === 0 ? (
           <div style={{ textAlign: 'center', paddingTop: 60, color: '#8888aa' }}>
