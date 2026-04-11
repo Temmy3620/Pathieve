@@ -24,6 +24,7 @@ export default function RegisterPage() {
       await authApi.register(email, password)
       const token = await authApi.login(email, password)
       localStorage.setItem('pathieve_token', token.access_token)
+      document.cookie = `pathieve_token=${token.access_token}; path=/; max-age=604800; samesite=lax`
       router.push('/wizard')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : '登録に失敗しました')

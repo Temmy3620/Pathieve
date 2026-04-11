@@ -64,6 +64,7 @@ export function GoalProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     localStorage.removeItem('pathieve_token')
+    document.cookie = 'pathieve_token=; path=/; max-age=0'
     setIsAuthenticated(false)
     setGoals([])
     setTasks([])

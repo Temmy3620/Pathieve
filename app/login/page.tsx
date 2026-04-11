@@ -24,7 +24,8 @@ export default function LoginPage() {
     try {
       const token = await authApi.login(email, password)
       localStorage.setItem('pathieve_token', token.access_token)
-      router.push('/')
+      document.cookie = `pathieve_token=${token.access_token}; path=/; max-age=604800; samesite=lax`
+      router.push('/pathmap')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'ログインに失敗しました')
     } finally {
