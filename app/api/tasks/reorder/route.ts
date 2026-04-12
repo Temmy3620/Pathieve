@@ -9,26 +9,30 @@ async function getUser(request: Request) {
   return payload?.sub as string | null
 }
 
-export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+export async function PUT(request: Request) {
   try {
     const userId = await getUser(request)
     if (!userId) return NextResponse.json({ detail: 'Not authenticated' }, { status: 401 })
 
-    const { id: goalId } = await context.params
-    const goal = await prisma.goal.findUnique({ where: { id: goalId } })
-    if (!goal || goal.user_id !== userId) {
-      return NextResponse.json({ detail: 'Goal not found' }, { status: 404 })
+    const tasksToUpdate: { id: string, order: number }[] = await request.json()
+    if (!Array.isArray(tasksToUpdate)) {
+      return NextResponse.json({ detail: 'Invalid payload' }, { status: 400 })
     }
 
-    const tasks = await prisma.task.findMany({
-      where: { goal_id: goalId },
-      orderBy: [
-        { order: 'asc' },
-        { created_at: 'asc' },
-      ],
-    })
+    // Wrap in a transaction to ensure all updates happen or none
+    await prisma.$transaction(
+      tasksToUpdate.map((task) =>
+        prisma.task.updateMany({
+          where: {
+            id: task.id,
+            goal: { user_id: userId }, // security check
+          },
+          data: { order: task.order },
+        })
+      )
+    )
 
-    return NextResponse.json(tasks)
+    return NextResponse.json({ success: true })
   } catch (error: any) {
     return NextResponse.json({ detail: 'Internal Server Error' }, { status: 500 })
   }

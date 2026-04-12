@@ -26,6 +26,7 @@ interface GoalContextValue {
   createTask: (goalId: string, title: string, memo?: string) => Promise<Task>
   updateTask: (id: string, patch: Partial<Pick<Task, 'title' | 'memo' | 'progress'>>) => Promise<void>
   deleteTask: (id: string) => Promise<void>
+  reorderTasks: (updatedTasks: Task[]) => Promise<void>
 
   // Wizard
   submitWizard: (wizard: WizardState) => Promise<void>
@@ -119,7 +120,7 @@ export function GoalProvider({ children }: { children: ReactNode }) {
   )
 
   const updateTask = useCallback(
-    async (id: string, patch: Partial<Pick<Task, 'title' | 'memo' | 'progress'>>) => {
+    async (id: string, patch: Partial<Pick<Task, 'title' | 'memo' | 'progress' | 'order'>>) => {
       const t = await taskApi.update(id, patch)
       setTasks((prev) => prev.map((x) => (x.id === id ? t : x)))
     },
@@ -129,6 +130,18 @@ export function GoalProvider({ children }: { children: ReactNode }) {
   const deleteTask = useCallback(async (id: string) => {
     await taskApi.delete(id)
     setTasks((prev) => prev.filter((x) => x.id !== id))
+  }, [])
+
+  const reorderTasks = useCallback(async (updatedTasks: Task[]) => {
+    // Optimistic UI update for the goal's tasks
+    setTasks((prev) => {
+      const otherTasks = prev.filter(t => t.goal_id !== updatedTasks[0]?.goal_id)
+      return [...otherTasks, ...updatedTasks]
+    })
+    
+    // API call
+    const updates = updatedTasks.map(t => ({ id: t.id, order: t.order }))
+    await taskApi.reorder(updates)
   }, [])
 
   // Wizard bulk submit
@@ -184,7 +197,7 @@ export function GoalProvider({ children }: { children: ReactNode }) {
         goals, tasks, isLoading, isAuthenticated, isInitialized,
         checkAuth, logout, refreshData,
         createGoal, updateGoal, deleteGoal,
-        createTask, updateTask, deleteTask,
+        createTask, updateTask, deleteTask, reorderTasks,
         submitWizard,
       }}
     >

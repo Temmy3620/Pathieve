@@ -126,6 +126,13 @@ export const taskApi = {
       method: 'POST',
       body: JSON.stringify(tasks),
     }),
+
+  /** Reorder tasks */
+  reorder: (updates: { id: string; order: number }[]): Promise<void> =>
+    request('/api/tasks/reorder', {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    }),
 }
 
 // ── User settings ────────────────────────

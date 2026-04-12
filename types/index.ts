@@ -29,6 +29,7 @@ export interface Task {
   memo: string
   /** Progress 0–100 */
   progress: number
+  order: number
   created_at: string
   updated_at: string
 }
@@ -90,6 +91,7 @@ export interface UpdateTaskPayload {
   title?: string
   memo?: string
   progress?: number
+  order?: number
 }
 
 export interface UpdateGoalPayload {

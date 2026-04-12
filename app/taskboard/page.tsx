@@ -8,13 +8,33 @@ import TaskCard from '@/components/taskboard/TaskCard'
 import Modal from '@/components/ui/Modal'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverEvent,
+  DragOverlay,
+} from '@dnd-kit/core'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 
 export default function TaskBoardPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { goals, tasks, isInitialized, checkAuth, refreshData, createTask } = useGoals()
+  const { goals, tasks, isInitialized, checkAuth, refreshData, createTask, reorderTasks } = useGoals()
 
   const [activeGoalId, setActiveGoalId] = useState<string | null>(null)
+  const [activeDragId, setActiveDragId] = useState<string | null>(null)
   const [addModal, setAddModal] = useState(false)
   const [newTitle, setNewTitle] = useState('')
   const [newMemo, setNewMemo] = useState('')
@@ -41,9 +61,18 @@ export default function TaskBoardPage() {
 
   const monthGoals = goals.filter((g) => g.level === '1month')
   const activeGoal = goals.find((g) => g.id === activeGoalId)
-  const activeTasks = tasks.filter((t) => t.goal_id === activeGoalId)
-  const avgProgress = activeTasks.length > 0
-    ? Math.round(activeTasks.reduce((s, t) => s + t.progress, 0) / activeTasks.length)
+  
+  const activeTasksFromContext = [...tasks.filter((t) => t.goal_id === activeGoalId)].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+  const [localTasks, setLocalTasks] = useState(activeTasksFromContext)
+
+  useEffect(() => {
+    if (!activeDragId) {
+      setLocalTasks(activeTasksFromContext)
+    }
+  }, [tasks, activeGoalId, activeDragId]) // Re-run if context tasks change
+
+  const avgProgress = localTasks.length > 0
+    ? Math.round(localTasks.reduce((s, t) => s + t.progress, 0) / localTasks.length)
     : 0
 
   const handleAddTask = async () => {
@@ -57,6 +86,47 @@ export default function TaskBoardPage() {
       setAddError(e instanceof Error ? e.message : 'エラーが発生しました')
     } finally { setAddLoading(false) }
   }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string)
+  }
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event
+    if (over && active.id !== over.id) {
+      setLocalTasks((prev) => {
+        const oldIndex = prev.findIndex((t) => t.id === active.id)
+        const newIndex = prev.findIndex((t) => t.id === over.id)
+        if (oldIndex !== -1 && newIndex !== -1) {
+          return arrayMove(prev, oldIndex, newIndex)
+        }
+        return prev
+      })
+    }
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveDragId(null)
+    const isChanged = localTasks.some((t, i) => t.id !== activeTasksFromContext[i]?.id)
+    if (isChanged) {
+      const updatedTasks = localTasks.map((t, i) => ({ ...t, order: i }))
+      reorderTasks(updatedTasks)
+    }
+  }
+
+  const handleDragCancel = () => {
+    setActiveDragId(null)
+    setLocalTasks(activeTasksFromContext)
+  }
+
+  const activeDragTask = localTasks.find(t => t.id === activeDragId)
 
   return (
     <AppShell>
@@ -129,14 +199,32 @@ export default function TaskBoardPage() {
                 transition: 'background 0.15s',
               }}>＋ 新しいタスクの追加</button>
 
-              {activeTasks.length === 0 ? (
+              {localTasks.length === 0 ? (
                 <p style={{ color: '#8888aa', fontSize: '0.85rem', textAlign: 'center', paddingTop: 20 }}>
                   まだタスクがありません
                 </p>
               ) : (
-                <div style={{ maxHeight: 420, overflowY: 'auto' }}>
-                  {activeTasks.map((t) => <TaskCard key={t.id} task={t} />)}
-                </div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDragEnd={handleDragEnd}
+                  onDragCancel={handleDragCancel}
+                  modifiers={[restrictToVerticalAxis]}
+                >
+                  <SortableContext
+                    items={localTasks.map((t) => t.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div style={{ maxHeight: 420, overflowY: 'auto' }}>
+                      {localTasks.map((t) => <TaskCard key={t.id} task={t} />)}
+                    </div>
+                  </SortableContext>
+                  <DragOverlay>
+                    {activeDragTask ? <TaskCard task={activeDragTask} isOverlay /> : null}
+                  </DragOverlay>
+                </DndContext>
               )}
             </div>
           </div>

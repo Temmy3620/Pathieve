@@ -47,6 +47,7 @@ model Task {
   title      String   @db.VarChar(512)
   memo       String   @default("") @db.VarChar(1024)
   progress   Int      @default(0)
+  order      Int      @default(0)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
