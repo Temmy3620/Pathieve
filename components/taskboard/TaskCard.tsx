@@ -28,10 +28,12 @@ export default function TaskCard({ task }: TaskCardProps) {
   return (
     <>
       <div className="animate-fade-in" style={{
-        background: '#ffffff',
-        border: '1.5px solid #e0dff5',
+        background: task.progress === 100 ? '#f4f4f5' : '#ffffff',
+        opacity: task.progress === 100 ? 0.45 : 1,
+        filter: task.progress === 100 ? 'grayscale(100%)' : 'none',
+        border: task.progress === 100 ? '1.5px dashed #d4d4d8' : '1.5px solid #e0dff5',
         borderRadius: 12, padding: '14px 16px', marginBottom: 10,
-        boxShadow: '0 1px 6px rgba(99,102,241,0.06)',
+        boxShadow: task.progress === 100 ? 'none' : '0 1px 6px rgba(99,102,241,0.06)',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
           <div style={{ flex: 1 }}>
