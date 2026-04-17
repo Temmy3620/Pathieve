@@ -15,16 +15,16 @@ const STEP_DESC = [
   '1ヶ月で達成したい目標を入力してください。ここから始めてもOKです。',
   '直近1ヶ月のタスクを作成してください。',
 ]
-const STEP_COLORS = ['#6366f1', '#f59e0b', '#64748b', '#22c55e']
+const STEP_COLORS = ['var(--accent)', 'var(--warning)', '#64748b', 'var(--success)']
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '8px 12px', borderRadius: 8,
-  border: '1.5px solid #d8d7f0', background: '#ffffff',
-  color: '#1a1a2e', fontSize: '0.88rem', fontFamily: 'inherit', outline: 'none',
+  border: '1.5px solid var(--border)', background: 'var(--bg-surface)',
+  color: 'var(--text-primary)', fontSize: '0.88rem', fontFamily: 'inherit', outline: 'none',
 }
 
 const draftRowStyle: React.CSSProperties = {
-  background: '#f4f3ff', border: '1.5px solid #d8d7f0',
+  background: 'var(--bg-raised)', border: '1.5px solid var(--border)',
   borderRadius: 10, padding: '12px 14px',
   display: 'flex', gap: 10, alignItems: 'flex-start',
 }
@@ -41,7 +41,7 @@ function GoalDraftRow({ draft, parents, onTitleChange, onParentChange, onRemove,
           placeholder="目標を入力..." style={inputStyle} />
         {parents.length > 0 && (
           <select value={draft.parentTempId ?? ''} onChange={(e) => onParentChange(e.target.value || null)}
-            style={{ ...inputStyle, color: '#4a4a6a', fontSize: '0.8rem' }}>
+            style={{ ...inputStyle, color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
             <option value="">（{parentLabel}に紐付けない）</option>
             {parents.map((p) => (
               <option key={p.tempId} value={p.tempId}>{p.title || '（未入力）'}</option>
@@ -50,16 +50,16 @@ function GoalDraftRow({ draft, parents, onTitleChange, onParentChange, onRemove,
         )}
       </div>
       <button onClick={onRemove} style={{
-        width: 28, height: 28, borderRadius: 6, border: '1.5px solid #d8d7f0',
-        background: '#ffffff', cursor: 'pointer', color: '#8888aa', fontSize: 14, flexShrink: 0,
+        width: 28, height: 28, borderRadius: 6, border: '1.5px solid var(--border)',
+        background: 'var(--bg-surface)', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 14, flexShrink: 0,
       }}>✕</button>
     </div>
   )
 }
 
 const addBtnStyle: React.CSSProperties = {
-  padding: '10px', borderRadius: 10, border: '1.5px dashed #a5b4fc',
-  background: '#f0f0ff', color: '#6366f1', fontSize: '0.85rem', fontWeight: 600,
+  padding: '10px', borderRadius: 10, border: '1.5px dashed var(--border-focus)',
+  background: '#f0f0ff', color: 'var(--accent)', fontSize: '0.85rem', fontWeight: 600,
   cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center',
 }
 
@@ -117,19 +117,19 @@ export default function WizardPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#eeeeff', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px' }}>
       <div className="animate-fade-in" style={{
         width: '100%', maxWidth: 560,
-        background: '#ffffff', borderRadius: 20,
-        border: '1.5px solid #d8d7f0',
+        background: 'var(--bg-surface)', borderRadius: 20,
+        border: '1.5px solid var(--border)',
         boxShadow: '0 8px 40px rgba(99,102,241,0.14)',
         overflow: 'hidden',
       }}>
         {/* Header */}
-        <div style={{ padding: '24px 28px 20px', borderBottom: '1.5px solid #e8e7f5', background: '#f8f7ff' }}>
+        <div style={{ padding: '24px 28px 20px', borderBottom: '1.5px solid var(--bg-muted)', background: 'var(--bg-raised)' }}>
           <div style={{
             fontSize: 22, fontWeight: 800, marginBottom: 16,
-            background: 'linear-gradient(135deg, #6366f1, #818cf8)',
+            background: 'linear-gradient(135deg, var(--accent), var(--accent-light))',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             letterSpacing: '-0.02em',
           }}>✦ Pathieve</div>
@@ -138,7 +138,7 @@ export default function WizardPage() {
           <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
             {STEPS.map((label, i) => (
               <div key={i} style={{ flex: 1 }}>
-                <div style={{ height: 4, borderRadius: 2, background: i <= step ? STEP_COLORS[i] : '#e8e7f5', transition: 'background 0.3s', marginBottom: 4 }} />
+                <div style={{ height: 4, borderRadius: 2, background: i <= step ? STEP_COLORS[i] : 'var(--bg-muted)', transition: 'background 0.3s', marginBottom: 4 }} />
                 <span style={{ fontSize: '0.6rem', color: i <= step ? STEP_COLORS[i] : '#9999bb', fontWeight: i === step ? 700 : 400, lineHeight: 1.2 }}>
                   {label}
                 </span>
@@ -146,14 +146,14 @@ export default function WizardPage() {
             ))}
           </div>
 
-          <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#1a1a2e', margin: '0 0 3px' }}>
+          <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 3px' }}>
             Step {step + 1}: {STEPS[step]}
           </h2>
-          <p style={{ fontSize: '0.82rem', color: '#8888aa', margin: 0 }}>{STEP_DESC[step]}</p>
+          <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0 }}>{STEP_DESC[step]}</p>
         </div>
 
         {/* Body */}
-        <div style={{ padding: '24px 28px', minHeight: 240, background: '#ffffff' }}>
+        <div style={{ padding: '24px 28px', minHeight: 240, background: 'var(--bg-surface)' }}>
           {/* Step 0: 5year */}
           {step === 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -173,7 +173,7 @@ export default function WizardPage() {
           {step === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {goals5.length === 0 && (
-                <p style={{ fontSize: '0.82rem', color: '#8888aa', marginBottom: 4 }}>
+                <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: 4 }}>
                   ※ 5年後の目標が未設定のため、紐付けなしで登録できます。
                 </p>
               )}
@@ -215,15 +215,15 @@ export default function WizardPage() {
                     <input value={t.title} onChange={(e) => setTasks((p) => p.map((x, j) => j === i ? { ...x, title: e.target.value } : x))}
                       placeholder="タスク名..." style={{ ...inputStyle, flex: 1 }} />
                     <button onClick={() => setTasks((p) => p.filter((_, j) => j !== i))} style={{
-                      width: 28, height: 28, borderRadius: 6, border: '1.5px solid #d8d7f0',
-                      background: '#ffffff', cursor: 'pointer', color: '#8888aa', fontSize: 14, flexShrink: 0,
+                      width: 28, height: 28, borderRadius: 6, border: '1.5px solid var(--border)',
+                      background: 'var(--bg-surface)', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 14, flexShrink: 0,
                     }}>✕</button>
                   </div>
                   <input value={t.memo} onChange={(e) => setTasks((p) => p.map((x, j) => j === i ? { ...x, memo: e.target.value } : x))}
-                    placeholder="メモ（任意）..." style={{ ...inputStyle, color: '#8888aa', fontSize: '0.8rem' }} />
+                    placeholder="メモ（任意）..." style={{ ...inputStyle, color: 'var(--text-muted)', fontSize: '0.8rem' }} />
                   {goals1m.length > 0 && (
                     <select value={t.parentTempId} onChange={(e) => setTasks((p) => p.map((x, j) => j === i ? { ...x, parentTempId: e.target.value } : x))}
-                      style={{ ...inputStyle, color: '#4a4a6a', fontSize: '0.8rem' }}>
+                      style={{ ...inputStyle, color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
                       {goals1m.map((gm) => (
                         <option key={gm.tempId} value={gm.tempId}>{gm.title || '（未入力の1ヶ月目標）'}</option>
                       ))}
@@ -239,14 +239,14 @@ export default function WizardPage() {
           )}
 
           {valError && (
-            <p style={{ marginTop: 12, fontSize: '0.82rem', color: '#ef4444', background: 'rgba(239,68,68,0.07)', padding: '8px 12px', borderRadius: 8 }}>
+            <p style={{ marginTop: 12, fontSize: '0.82rem', color: 'var(--danger)', background: 'rgba(239,68,68,0.07)', padding: '8px 12px', borderRadius: 8 }}>
               {valError}
             </p>
           )}
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 28px', borderTop: '1.5px solid #e8e7f5', background: '#fafafa', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '16px 28px', borderTop: '1.5px solid var(--bg-muted)', background: '#fafafa', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {step > 0 ? (
             <Button variant="ghost" onClick={() => { setValError(''); setStep((s) => s - 1) }}>← 戻る</Button>
           ) : <div />}

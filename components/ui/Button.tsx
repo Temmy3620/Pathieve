@@ -12,10 +12,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT_COLORS: Record<Variant, { bg: string; color: string; border: string; hoverBg: string }> = {
-  primary:   { bg: '#6366f1', color: '#ffffff', border: '#6366f1', hoverBg: '#4f46e5' },
-  secondary: { bg: '#f4f3ff', color: '#4a4a6a', border: '#d8d7f0', hoverBg: '#eeeeff' },
-  danger:    { bg: '#ef4444', color: '#ffffff', border: '#ef4444', hoverBg: '#dc2626' },
-  ghost:     { bg: 'transparent', color: '#6060a0', border: 'transparent', hoverBg: '#f4f3ff' },
+  primary:   { bg: 'var(--accent)', color: 'var(--bg-surface)', border: 'var(--accent)', hoverBg: '#4f46e5' },
+  secondary: { bg: 'var(--bg-raised)', color: 'var(--text-secondary)', border: 'var(--border)', hoverBg: 'var(--bg-base)' },
+  danger:    { bg: 'var(--danger)', color: 'var(--bg-surface)', border: 'var(--danger)', hoverBg: '#dc2626' },
+  ghost:     { bg: 'transparent', color: '#6060a0', border: 'transparent', hoverBg: 'var(--bg-raised)' },
 }
 
 const SIZE_STYLES: Record<Size, { padding: string; fontSize: string; borderRadius: string }> = {

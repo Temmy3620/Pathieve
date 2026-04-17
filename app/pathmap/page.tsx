@@ -11,8 +11,8 @@ import type { Goal } from '@/types'
 
 // ── Connection-line colors by parent level ──────────────
 const LINE_COLOR: Record<Goal['level'], string> = {
-  '5year': '#6366f1',
-  '1year': '#f59e0b',
+  '5year': 'var(--goal-5year)',
+  '1year': 'var(--warning)',
   '1month': '#64748b',
 }
 
@@ -44,7 +44,7 @@ function AddGoalModal({ level, parentId, onClose }: { level: Goal['level']; pare
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <Input label="目標タイトル" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus
           onKeyDown={(e) => { if (e.key === 'Enter') handleAdd() }} />
-        {error && <p style={{ fontSize: '0.82rem', color: '#ef4444' }}>{error}</p>}
+        {error && <p style={{ fontSize: '0.82rem', color: 'var(--danger)' }}>{error}</p>}
       </div>
     </Modal>
   )
@@ -131,9 +131,9 @@ function BezierLine({ x1, y1, x2, y2, color }: Line) {
 
 // ── Column config ────────────────────────────────────────
 const COLUMNS = [
-  { level: '5year' as const, label: '5年後の目標', headerBg: '#ede9fe', headerColor: '#6366f1', addBtnBorder: '#a5b4fc', addBtnColor: '#6366f1', colBg: '#faf9ff' },
-  { level: '1year' as const, label: '1年後の目標', headerBg: '#fffbeb', headerColor: '#b45309', addBtnBorder: '#fcd34d', addBtnColor: '#b45309', colBg: '#fffefb' },
-  { level: '1month' as const, label: '1ヶ月後の目標', headerBg: '#f1f5f9', headerColor: '#475569', addBtnBorder: '#94a3b8', addBtnColor: '#475569', colBg: '#f8fafc' },
+  { level: '5year' as const, label: '5年後の目標', headerBg: 'var(--goal-5year-bg)', headerColor: 'var(--goal-5year)', addBtnBorder: 'var(--goal-5year)', addBtnColor: 'var(--goal-5year)', colBg: 'var(--col-5year-bg)' },
+  { level: '1year' as const, label: '1年後の目標', headerBg: 'var(--goal-1year-bg)', headerColor: '#b45309', addBtnBorder: '#fcd34d', addBtnColor: '#b45309', colBg: 'var(--col-1year-bg)' },
+  { level: '1month' as const, label: '1ヶ月後の目標', headerBg: 'var(--goal-1month-bg)', headerColor: '#475569', addBtnBorder: '#94a3b8', addBtnColor: '#475569', colBg: 'var(--col-1month-bg)' },
 ]
 
 // ── Main page ────────────────────────────────────────────
@@ -177,30 +177,30 @@ export default function PathMapPage() {
       <div style={{ padding: '28px 24px', minHeight: '100vh' }}>
         {/* Header */}
         <div style={{ marginBottom: 24 }}>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1a1a2e', margin: 0, letterSpacing: '-0.02em' }}>
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.02em' }}>
             Path Map
           </h1>
-          <p style={{ color: '#8888aa', fontSize: '0.83rem', margin: '4px 0 0' }}>未来への道筋を俯瞰する</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.83rem', margin: '4px 0 0' }}>未来への道筋を俯瞰する</p>
         </div>
 
         {/* Legend */}
         <div style={{ display: 'flex', gap: 18, marginBottom: 16, flexWrap: 'wrap' }}>
           {[
-            { label: '5年後 → 1年後のつながり', color: '#6366f1' },
-            { label: '1年後 → 1ヶ月後のつながり', color: '#f59e0b' },
+            { label: '5年後 → 1年後のつながり', color: 'var(--accent)' },
+            { label: '1年後 → 1ヶ月後のつながり', color: 'var(--warning)' },
           ].map((l) => (
             <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <svg width={28} height={10} style={{ flexShrink: 0 }}>
                 <line x1={0} y1={5} x2={22} y2={5} stroke={l.color} strokeWidth={2} strokeOpacity={0.6} />
                 <circle cx={22} cy={5} r={3.5} fill={l.color} fillOpacity={0.7} />
               </svg>
-              <span style={{ fontSize: '0.72rem', color: '#8888aa' }}>{l.label}</span>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{l.label}</span>
             </div>
           ))}
         </div>
 
         {!isInitialized ? (
-          <div style={{ color: '#8888aa', textAlign: 'center', paddingTop: 60 }}>読み込み中...</div>
+          <div style={{ color: 'var(--text-muted)', textAlign: 'center', paddingTop: 60 }}>読み込み中...</div>
         ) : (
           /* Grid + SVG overlay */
           <div ref={gridRef} style={{ position: 'relative' }}>
@@ -218,8 +218,8 @@ export default function PathMapPage() {
             {/* Card grid */}
             <div style={{
               display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-              background: '#ffffff', borderRadius: 16,
-              border: '1.5px solid #d8d7f0', overflow: 'hidden',
+              background: 'var(--bg-surface)', borderRadius: 16,
+              border: '1.5px solid var(--border)', overflow: 'hidden',
               boxShadow: '0 4px 20px rgba(99,102,241,0.10)',
             }}>
               {COLUMNS.map((col, colIdx) => {
@@ -227,14 +227,14 @@ export default function PathMapPage() {
                 return (
                   <div key={col.level} style={{
                     background: col.colBg,
-                    borderRight: colIdx < 2 ? '1.5px solid #d8d7f0' : 'none',
+                    borderRight: colIdx < 2 ? '1.5px solid var(--border)' : 'none',
                     padding: '0 0 20px',
                     display: 'flex', flexDirection: 'column', minHeight: 480,
                   }}>
                     {/* Column header */}
                     <div style={{
                       background: col.headerBg, padding: '14px 16px',
-                      borderBottom: '1.5px solid #d8d7f0', marginBottom: 16, textAlign: 'center',
+                      borderBottom: '1.5px solid var(--border)', marginBottom: 16, textAlign: 'center',
                     }}>
                       <span style={{ fontWeight: 700, fontSize: '0.9rem', color: col.headerColor }}>
                         {col.label}

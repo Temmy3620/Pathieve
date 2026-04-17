@@ -33,6 +33,7 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
 
   // If this is the active dragging item (the placeholder left in the list), make it an empty box
   const isPlaceholder = isDragging && !isOverlay;
+  const showAsDone = task.progress === 100 && !isOverlay && !isPlaceholder;
 
   const handleSave = async () => {
     setSaving(true)
@@ -51,10 +52,9 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
           transform: isOverlay ? 'scale(1.04) rotate(-1.5deg)' : (isPlaceholder ? undefined : CSS.Transform.toString(transform)),
           transition: isOverlay ? 'none' : transition,
           zIndex: isOverlay ? 999 : (isDragging ? 10 : 1),
-          background: isOverlay ? '#f8f7ff' : (isPlaceholder ? '#f8f7ff' : (task.progress === 100 ? '#f4f4f5' : '#ffffff')),
-          opacity: task.progress === 100 && !isOverlay && !isPlaceholder ? 0.45 : 1,
-          filter: task.progress === 100 && !isOverlay && !isPlaceholder ? 'grayscale(100%)' : 'none',
-          border: isOverlay ? '2px solid #6366f1' : (isPlaceholder ? '2px dashed #818cf8' : (task.progress === 100 ? '1.5px dashed #d4d4d8' : '1.5px solid #e0dff5')),
+          background: isOverlay ? 'var(--bg-raised)' : (isPlaceholder ? 'var(--bg-raised)' : (task.progress === 100 ? 'var(--task-complete-bg)' : 'var(--bg-surface)')),
+          filter: showAsDone ? 'grayscale(100%) opacity(0.7)' : 'none',
+          border: isOverlay ? '2px solid var(--accent)' : (isPlaceholder ? '2px dashed var(--accent-light)' : (task.progress === 100 ? '1.5px dashed var(--task-complete-border)' : '1.5px solid var(--border)')),
           borderRadius: 12, padding: '14px 16px', marginBottom: 10,
           boxShadow: isOverlay ? '0 16px 40px rgba(99,102,241,0.3)' : (task.progress === 100 ? 'none' : '0 1px 6px rgba(99,102,241,0.06)'),
           cursor: isOverlay ? 'grabbing' : undefined,
@@ -86,15 +86,17 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
           </div>
 
           <div style={{ flex: 1 }}>
-            <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: '0 0 3px', color: '#1a1a2e', lineHeight: 1.4 }}>
+            <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: '0 0 3px', color: showAsDone ? 'var(--text-muted)' : 'var(--text-primary)', lineHeight: 1.4 }}>
               {task.title}
             </p>
             {task.memo && (
-              <p style={{ fontSize: '0.75rem', color: '#8888aa', margin: '0 0 8px', lineHeight: 1.4 }}>
+              <p style={{ fontSize: '0.75rem', color: showAsDone ? 'var(--text-muted)' : 'var(--text-secondary)', margin: '0 0 8px', lineHeight: 1.4, opacity: showAsDone ? 0.6 : 1 }}>
                 memo:{task.memo}
               </p>
             )}
-            <ProgressBar value={task.progress} label="プログレス" />
+            <div style={{ opacity: showAsDone ? 0.6 : 1 }}>
+              <ProgressBar value={task.progress} label="プログレス" />
+            </div>
           </div>
           <button
             onClick={() => { setEditTitle(task.title); setEditMemo(task.memo); setEditProgress(task.progress); setEditModal(true) }}
@@ -102,8 +104,8 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
             style={{
               flexShrink: 0, width: 30, height: 30,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 8, border: '1.5px solid #d8d7f0',
-              background: '#f4f3ff', cursor: 'pointer', fontSize: 13, color: '#6366f1',
+              borderRadius: 8, border: '1.5px solid var(--border)',
+              background: 'var(--bg-raised)', cursor: 'pointer', fontSize: 13, color: 'var(--accent)',
             }}
           >✏️</button>
         </div>
@@ -122,12 +124,12 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
           <Input label="タスク名" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
           <Input label="メモ" value={editMemo} onChange={(e) => setEditMemo(e.target.value)} />
           <div>
-            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#4a4a6a', display: 'block', marginBottom: 6 }}>
+            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
               進捗度: {editProgress}%
             </label>
             <input type="range" min={0} max={100} step={5} value={editProgress}
               onChange={(e) => setEditProgress(Number(e.target.value))}
-              style={{ width: '100%', accentColor: '#6366f1' }} />
+              style={{ width: '100%', accentColor: 'var(--accent)' }} />
             <ProgressBar value={editProgress} showValue={false} />
           </div>
         </div>

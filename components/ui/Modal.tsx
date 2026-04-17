@@ -36,8 +36,8 @@ export default function Modal({ isOpen, onClose, title, children, actions, dange
       {/* Panel */}
       <div className="animate-scale-in" style={{
         position: 'relative',
-        background: '#ffffff',
-        border: `1.5px solid ${danger ? '#ef4444' : '#d8d7f0'}`,
+        background: 'var(--bg-surface)',
+        border: `1.5px solid ${danger ? 'var(--danger)' : 'var(--border)'}`,
         borderRadius: 16,
         padding: 28,
         width: '100%',
@@ -48,11 +48,11 @@ export default function Modal({ isOpen, onClose, title, children, actions, dange
           margin: '0 0 12px',
           fontSize: '1.05rem',
           fontWeight: 700,
-          color: danger ? '#ef4444' : '#1a1a2e',
+          color: danger ? 'var(--danger)' : 'var(--text-primary)',
         }}>
           {title}
         </h3>
-        <div style={{ color: '#4a4a6a', fontSize: '0.9rem', lineHeight: 1.7 }}>
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.7 }}>
           {children}
         </div>
         {actions && (

@@ -72,7 +72,7 @@ function TaskBoardSubMenu({ monthGoals }: { monthGoals: any[] }) {
         return (
           <Link key={g.id} href={`/taskboard?goal=${g.id}`} style={{
             display: 'block', padding: '6px 8px', marginBottom: 2,
-            fontSize: '0.76rem', color: isActive ? '#6366f1' : '#8888aa',
+            fontSize: '0.76rem', color: isActive ? 'var(--accent)' : 'var(--text-muted)',
             textDecoration: 'none', borderRadius: 6,
             fontWeight: isActive ? 700 : 500,
             background: isActive ? 'rgba(99,102,241,0.1)' : 'transparent',
@@ -108,17 +108,17 @@ export default function Sidebar() {
       top: 0,
       display: 'flex',
       flexDirection: 'column',
-      background: '#ffffff',
-      borderRight: '1.5px solid #d8d7f0',
+      background: 'var(--bg-surface)',
+      borderRight: '1.5px solid var(--border)',
       overflow: 'hidden',
     }}>
       {/* Logo */}
-      <div style={{ padding: '20px 18px 16px', borderBottom: '1.5px solid #d8d7f0' }}>
+      <div style={{ padding: '20px 18px 16px', borderBottom: '1.5px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 20 }}>✦</span>
           <span style={{
             fontWeight: 800, fontSize: '1.05rem',
-            background: 'linear-gradient(135deg, #6366f1, #818cf8)',
+            background: 'linear-gradient(135deg, var(--accent), var(--accent-light))',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             letterSpacing: '-0.02em',
           }}>Pathieve</span>
@@ -134,12 +134,12 @@ export default function Sidebar() {
               <Link href={href} style={{
                 display: 'flex', alignItems: 'center', gap: 10,
                 padding: '9px 16px',
-                color: active ? '#6366f1' : '#4a4a6a',
+                color: active ? 'var(--accent)' : 'var(--text-secondary)',
                 fontWeight: active ? 700 : 500,
                 fontSize: '0.875rem',
                 textDecoration: 'none',
                 background: active ? 'rgba(99,102,241,0.08)' : 'transparent',
-                borderLeft: `3px solid ${active ? '#6366f1' : 'transparent'}`,
+                borderLeft: `3px solid ${active ? 'var(--accent)' : 'transparent'}`,
                 transition: 'all 0.15s',
               }}>
                 <span style={{ fontSize: 15, display: 'inline-flex', alignItems: 'center' }}>{icon}</span>
@@ -147,7 +147,7 @@ export default function Sidebar() {
               </Link>
 
               {href === '/taskboard' && active && monthGoals.length > 0 && (
-                <Suspense fallback={<div style={{ paddingLeft: 32, fontSize: '0.76rem', color: '#8888aa' }}>読み込み中...</div>}>
+                <Suspense fallback={<div style={{ paddingLeft: 32, fontSize: '0.76rem', color: 'var(--text-muted)' }}>読み込み中...</div>}>
                   <TaskBoardSubMenu monthGoals={monthGoals} />
                 </Suspense>
               )}
@@ -157,12 +157,12 @@ export default function Sidebar() {
       </div>
 
       {/* Bottom */}
-      <div style={{ padding: '12px 14px', borderTop: '1.5px solid #d8d7f0', display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ padding: '12px 14px', borderTop: '1.5px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 6 }}>
         <button onClick={toggleMode} style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '6px 8px', borderRadius: 6, border: 'none',
           background: 'transparent', cursor: 'pointer',
-          color: '#8888aa', fontSize: '0.78rem', fontFamily: 'inherit', fontWeight: 500,
+          color: 'var(--text-muted)', fontSize: '0.78rem', fontFamily: 'inherit', fontWeight: 500,
         }}>
           {mode === 'dark' ? '☀️ ライトモード' : '🌙 ダークモード'}
         </button>
@@ -170,7 +170,7 @@ export default function Sidebar() {
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '6px 8px', borderRadius: 6, border: 'none',
           background: 'transparent', cursor: 'pointer',
-          color: '#8888aa', fontSize: '0.78rem', fontFamily: 'inherit', fontWeight: 500,
+          color: 'var(--text-muted)', fontSize: '0.78rem', fontFamily: 'inherit', fontWeight: 500,
         }}>
           🚪 ログアウト
         </button>

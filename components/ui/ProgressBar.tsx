@@ -10,16 +10,16 @@ interface ProgressBarProps {
 export default function ProgressBar({ value, label, showValue = true, height = 8 }: ProgressBarProps) {
   const clamped = Math.max(0, Math.min(100, value))
   const barColor = clamped === 100
-    ? '#22c55e'
-    : `linear-gradient(90deg, #6366f1, #818cf8)`
+    ? 'var(--success)'
+    : `linear-gradient(90deg, var(--accent), var(--accent-light))`
 
   return (
     <div style={{ width: '100%' }}>
       {(label || showValue) && (
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-          {label && <span style={{ fontSize: '0.8rem', color: '#4a4a6a', fontWeight: 500 }}>{label}</span>}
+          {label && <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 500 }}>{label}</span>}
           {showValue && (
-            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: clamped === 100 ? '#22c55e' : '#6366f1' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: clamped === 100 ? 'var(--success)' : 'var(--accent)' }}>
               {clamped}%
             </span>
           )}
@@ -27,7 +27,7 @@ export default function ProgressBar({ value, label, showValue = true, height = 8
       )}
       <div style={{
         width: '100%', height,
-        background: '#e8e7f5',
+        background: 'var(--bg-muted)',
         borderRadius: height,
         overflow: 'hidden',
       }}>

@@ -20,11 +20,11 @@ function SettingRow({ title, description, action }: { title: string; description
   return (
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      padding: '20px 0', borderBottom: '1px solid #e8e7f5',
+      padding: '20px 0', borderBottom: '1px solid var(--bg-muted)',
     }}>
       <div>
-        <p style={{ fontWeight: 600, fontSize: '0.95rem', color: '#1a1a2e', margin: '0 0 3px' }}>{title}</p>
-        <p style={{ fontSize: '0.82rem', color: '#8888aa', margin: 0 }}>{description}</p>
+        <p style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)', margin: '0 0 3px' }}>{title}</p>
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0 }}>{description}</p>
       </div>
       <div style={{ flexShrink: 0, marginLeft: 24 }}>{action}</div>
     </div>
@@ -72,19 +72,19 @@ export default function SettingsPage() {
   return (
     <AppShell>
       <div style={{ padding: '28px 24px', minHeight: '100vh' }}>
-        <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1a1a2e', margin: '0 0 6px', letterSpacing: '-0.02em' }}>Settings</h1>
-        <p style={{ color: '#8888aa', fontSize: '0.83rem', margin: '0 0 28px' }}>アプリのカスタマイズと管理</p>
+        <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 6px', letterSpacing: '-0.02em' }}>Settings</h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.83rem', margin: '0 0 28px' }}>アプリのカスタマイズと管理</p>
 
         <div style={{
-          background: '#ffffff', borderRadius: 16,
-          border: '1.5px solid #d8d7f0',
+          background: 'var(--bg-surface)', borderRadius: 16,
+          border: '1.5px solid var(--border)',
           boxShadow: '0 4px 20px rgba(99,102,241,0.10)',
           padding: '0 24px', maxWidth: 600,
         }}>
           {/* Color customize row */}
-          <div style={{ padding: '20px 0', borderBottom: '1px solid #e8e7f5' }}>
-            <p style={{ fontWeight: 600, fontSize: '0.95rem', color: '#1a1a2e', margin: '0 0 3px' }}>カラーカスタマイズ</p>
-            <p style={{ fontSize: '0.82rem', color: '#8888aa', margin: '0 0 14px' }}>アプリのカラーテーマを変更します。</p>
+          <div style={{ padding: '20px 0', borderBottom: '1px solid var(--bg-muted)' }}>
+            <p style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)', margin: '0 0 3px' }}>カラーカスタマイズ</p>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '0 0 14px' }}>アプリのカラーテーマを変更します。</p>
 
             {/* Accent colors */}
             <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
@@ -92,7 +92,7 @@ export default function SettingsPage() {
                 <button key={opt.value} onClick={() => setAccent(opt.value)} title={opt.label} style={{
                   width: 36, height: 36, borderRadius: '50%',
                   background: opt.color,
-                  border: accent === opt.value ? `3px solid #1a1a2e` : '3px solid transparent',
+                  border: accent === opt.value ? `3px solid var(--text-primary)` : '3px solid transparent',
                   cursor: 'pointer',
                   outline: accent === opt.value ? `2px solid ${opt.color}` : 'none',
                   outlineOffset: 2,
@@ -106,8 +106,8 @@ export default function SettingsPage() {
             <button onClick={toggleMode} style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '8px 18px', borderRadius: 20,
-              border: '1.5px solid #d8d7f0', background: '#f4f3ff',
-              color: '#4a4a6a', fontSize: '0.85rem', fontWeight: 600,
+              border: '1.5px solid var(--border)', background: 'var(--bg-raised)',
+              color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600,
               cursor: 'pointer', fontFamily: 'inherit',
             }}>
               {mode === 'dark' ? '☀️ ライトモードに切替' : '🌙 ダークモードに切替'}
@@ -121,7 +121,7 @@ export default function SettingsPage() {
               <button onClick={() => setResetModal(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 padding: '8px 18px', borderRadius: 20, border: 'none',
-                background: '#6366f1', color: '#ffffff',
+                background: 'var(--accent)', color: 'var(--bg-surface)',
                 fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
               }}>実行する ▷</button>
             }
@@ -134,7 +134,7 @@ export default function SettingsPage() {
               <button onClick={() => setWithdrawModal(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 padding: '8px 18px', borderRadius: 20, border: 'none',
-                background: '#ef4444', color: '#ffffff',
+                background: 'var(--danger)', color: 'var(--bg-surface)',
                 fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
               }}>実行する ▷</button>
             }

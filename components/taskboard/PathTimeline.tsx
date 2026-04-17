@@ -2,9 +2,9 @@
 import type { Goal } from '@/types'
 
 const LEVEL_COLORS = {
-  '5year':  { bg: '#ede9fe', border: '#a5b4fc', color: '#6366f1', label: '5年後' },
-  '1year':  { bg: '#fffbeb', border: '#fcd34d', color: '#b45309', label: '1年後' },
-  '1month': { bg: '#f1f5f9', border: '#94a3b8', color: '#475569', label: '1ヶ月後' },
+  '5year':  { bg: 'var(--goal-5year-bg)', border: 'var(--goal-5year)', color: 'var(--goal-5year)', label: '5年後' },
+  '1year':  { bg: 'var(--goal-1year-bg)', border: '#fcd34d', color: '#b45309', label: '1年後' },
+  '1month': { bg: 'var(--goal-1month-bg)', border: '#94a3b8', color: '#475569', label: '1ヶ月後' },
 }
 
 interface PathTimelineProps {
@@ -35,12 +35,12 @@ export default function PathTimeline({ goals, activeGoalId }: PathTimelineProps)
             <span style={{ fontSize: '0.63rem', fontWeight: 700, color: step.color, textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 4 }}>
               {step.label}
             </span>
-            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#1a1a2e', lineHeight: 1.4 }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.4 }}>
               {step.goal.title}
             </span>
           </div>
           {i < steps.length - 1 && (
-            <div style={{ marginLeft: 20, width: 2, height: 20, background: '#d8d7f0' }} />
+            <div style={{ marginLeft: 20, width: 2, height: 20, background: 'var(--border)' }} />
           )}
         </div>
       ))}

@@ -8,9 +8,9 @@ import Input from '@/components/ui/Input'
 import { useGoals } from '@/context/GoalContext'
 
 const LEVEL_STYLES = {
-  '5year':  { bg: '#ede9fe', border: '#a5b4fc', label: '5年後', badgeColor: '#6366f1', badgeBg: '#eef2ff' },
-  '1year':  { bg: '#fffbeb', border: '#fcd34d', label: '1年後', badgeColor: '#b45309', badgeBg: '#fef9c3' },
-  '1month': { bg: '#f1f5f9', border: '#94a3b8', label: '1ヶ月後', badgeColor: '#475569', badgeBg: '#e2e8f0' },
+  '5year':  { bg: 'var(--goal-5year-bg)', border: 'var(--goal-5year)', label: '5年後', badgeColor: 'var(--goal-5year)', badgeBg: 'var(--goal-5year-badge-bg)' },
+  '1year':  { bg: 'var(--goal-1year-bg)', border: '#fcd34d', label: '1年後', badgeColor: '#b45309', badgeBg: 'var(--goal-1year-badge-bg)' },
+  '1month': { bg: 'var(--goal-1month-bg)', border: '#94a3b8', label: '1ヶ月後', badgeColor: '#475569', badgeBg: 'var(--goal-1month-badge-bg)' },
 }
 
 interface GoalCardProps {
@@ -80,7 +80,7 @@ export default function GoalCard({ goal, allGoals, allTasks, onAddChild }: GoalC
             </div>
           </div>
         ) : (
-          <p style={{ fontSize: '0.88rem', fontWeight: 600, color: '#1a1a2e', lineHeight: 1.5, margin: '0 0 10px', wordBreak: 'break-word' }}>
+          <p style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.5, margin: '0 0 10px', wordBreak: 'break-word' }}>
             {goal.title}
           </p>
         )}
@@ -89,15 +89,15 @@ export default function GoalCard({ goal, allGoals, allTasks, onAddChild }: GoalC
           <div style={{ display: 'flex', gap: 6 }}>
             <button onClick={() => setEditMode(true)} style={{
               fontSize: '0.72rem', fontWeight: 600, padding: '3px 9px', borderRadius: 6,
-              border: '1px solid #d8d7f0', background: '#ffffff',
-              color: '#4a4a6a', cursor: 'pointer', fontFamily: 'inherit',
+              border: '1px solid var(--border)', background: 'var(--bg-surface)',
+              color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit',
             }}>編集</button>
 
             {canDelete && (
               <button onClick={() => setDeleteModal(true)} style={{
                 fontSize: '0.72rem', fontWeight: 600, padding: '3px 9px', borderRadius: 6,
                 border: '1px solid #fca5a5', background: '#fff1f1',
-                color: '#ef4444', cursor: 'pointer', fontFamily: 'inherit',
+                color: 'var(--danger)', cursor: 'pointer', fontFamily: 'inherit',
               }}>削除</button>
             )}
           </div>
@@ -124,7 +124,7 @@ export default function GoalCard({ goal, allGoals, allTasks, onAddChild }: GoalC
         }
       >
         <p>「{goal.title}」を削除します。この操作は取り消せません。</p>
-        {reason && <p style={{ color: '#ef4444', marginTop: 8 }}>{reason}</p>}
+        {reason && <p style={{ color: 'var(--danger)', marginTop: 8 }}>{reason}</p>}
       </Modal>
     </>
   )
