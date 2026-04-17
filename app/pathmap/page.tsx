@@ -186,7 +186,7 @@ export default function PathMapPage() {
         {/* Legend */}
         <div style={{ display: 'flex', gap: 18, marginBottom: 16, flexWrap: 'wrap' }}>
           {[
-            { label: '5年後 → 1年後のつながり', color: 'var(--accent)' },
+            { label: '5年後 → 1年後のつながり', color: 'var(--goal-5year)' },
             { label: '1年後 → 1ヶ月後のつながり', color: 'var(--warning)' },
           ].map((l) => (
             <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
