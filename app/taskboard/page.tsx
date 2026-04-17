@@ -166,7 +166,10 @@ export default function TaskBoardPage() {
                     他のボード
                   </p>
                   {monthGoals.filter((g) => g.id !== activeGoalId).map((g) => (
-                    <button key={g.id} onClick={() => setActiveGoalId(g.id)} style={{
+                    <button key={g.id} onClick={() => {
+                      setActiveGoalId(g.id)
+                      router.push(`/taskboard?goal=${g.id}`)
+                    }} style={{
                       display: 'block', width: '100%', textAlign: 'left',
                       padding: '6px 8px', borderRadius: 6, border: 'none',
                       background: 'transparent', color: '#8888aa',
