@@ -96,7 +96,8 @@ export default function GoalCard({ goal, allGoals, allTasks, onAddChild }: GoalC
             {canDelete && (
               <button onClick={() => setDeleteModal(true)} style={{
                 fontSize: '0.72rem', fontWeight: 600, padding: '3px 9px', borderRadius: 6,
-                border: '1px solid #fca5a5', background: '#fff1f1',
+                border: '1px solid color-mix(in srgb, var(--danger) 30%, transparent)', 
+                background: 'color-mix(in srgb, var(--danger) 10%, transparent)',
                 color: 'var(--danger)', cursor: 'pointer', fontFamily: 'inherit',
               }}>削除</button>
             )}
