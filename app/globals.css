@@ -11,15 +11,15 @@
   --accent-dark:  #4f46e5;
 
   /* Layout backgrounds */
-  --bg-base:    #eeeeff;
+  --bg-base:    color-mix(in srgb, var(--accent) 6%, #ffffff);
   --bg-surface: #ffffff;
-  --bg-raised:  #f4f3ff;
-  --bg-muted:   #e8e7f5;
+  --bg-raised:  color-mix(in srgb, var(--accent) 4%, #ffffff);
+  --bg-muted:   color-mix(in srgb, var(--accent) 12%, #ffffff);
 
   /* Text */
-  --text-primary:   #1a1a2e;
-  --text-secondary: #4a4a6a;
-  --text-muted:     #8888aa;
+  --text-primary:   color-mix(in srgb, var(--accent) 20%, #050505);
+  --text-secondary: color-mix(in srgb, var(--accent) 30%, #222222);
+  --text-muted:     color-mix(in srgb, var(--accent) 40%, #555555);
   --text-inverse:   #ffffff;
 
   /* Goal level colors */
@@ -48,8 +48,8 @@
   --danger:  #ef4444;
 
   /* Border */
-  --border:       #d8d7f0;
-  --border-focus: #6366f1;
+  --border:       color-mix(in srgb, var(--accent) 15%, #ffffff);
+  --border-focus: var(--accent);
 
   /* Shadow */
   --shadow-sm: 0 1px 3px rgba(99,102,241,0.10);
@@ -66,16 +66,15 @@
 [data-accent="rose"]   { --accent: #f43f5e; --accent-light: #fb7185; --accent-dark: #e11d48; }
 [data-accent="sky"]    { --accent: #0ea5e9; --accent-light: #38bdf8; --accent-dark: #0284c7; }
 
-/* ── Dark mode ─────────────────────────── */
 [data-theme="dark"] {
-  --bg-base:    #0f0f1a;
-  --bg-surface: #1a1a2e;
-  --bg-raised:  #22223a;
-  --bg-muted:   #2a2a44;
+  --bg-base:    color-mix(in srgb, var(--accent) 10%, #050505);
+  --bg-surface: color-mix(in srgb, var(--accent) 14%, #0a0a0a);
+  --bg-raised:  color-mix(in srgb, var(--accent) 18%, #0d0d0d);
+  --bg-muted:   color-mix(in srgb, var(--accent) 22%, #111111);
 
-  --text-primary:   #e8e8f5;
-  --text-secondary: #a0a0c0;
-  --text-muted:     #6060a0;
+  --text-primary:   color-mix(in srgb, var(--accent) 10%, #ffffff);
+  --text-secondary: color-mix(in srgb, var(--accent) 30%, #aaaaaa);
+  --text-muted:     color-mix(in srgb, var(--accent) 40%, #777777);
 
   --goal-1month: #64748b;
   --goal-5year-bg: rgba(99, 102, 241, 0.12);
@@ -93,8 +92,8 @@
   --task-complete-bg: rgba(0, 0, 0, 0.4);
   --task-complete-border: rgba(255, 255, 255, 0.08);
 
-  --border:       #2e2e50;
-  --border-focus: #818cf8;
+  --border:       color-mix(in srgb, var(--accent) 28%, #111111);
+  --border-focus: var(--accent-light);
 
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.5);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.6);
@@ -117,8 +116,8 @@ html {
 
 /* Force explicit light background — not system default */
 html, body {
-  background-color: #eeeeff !important;
-  color: #1a1a2e !important;
+  background-color: var(--bg-base) !important;
+  color: var(--text-primary) !important;
   font-family: "Inter", system-ui, -apple-system, sans-serif;
   line-height: 1.6;
   min-height: 100vh;
@@ -127,8 +126,8 @@ html, body {
 /* Dark mode body override */
 [data-theme="dark"] body,
 [data-theme="dark"] html {
-  background-color: #0f0f1a !important;
-  color: #e8e8f5 !important;
+  background-color: var(--bg-base) !important;
+  color: var(--text-primary) !important;
 }
 
 /* ──────────────────────────────────────────
