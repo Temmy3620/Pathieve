@@ -14,6 +14,7 @@ const ACCENT_OPTIONS: { value: AccentColor; label: string; color: string }[] = [
   { value: 'teal',   label: 'ティール',    color: '#14b8a6' },
   { value: 'rose',   label: 'ローズ',      color: '#f43f5e' },
   { value: 'sky',    label: 'スカイ',      color: '#0ea5e9' },
+  { value: 'zinc',   label: 'グラファイト', color: '#71717a' },
 ]
 
 function SettingRow({ title, description, action }: { title: string; description: string; action: React.ReactNode }) {

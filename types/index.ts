@@ -102,7 +102,7 @@ export interface UpdateGoalPayload {
 // ── Settings / Theme ─────────────────────
 
 export type ThemeMode = 'light' | 'dark'
-export type AccentColor = 'indigo' | 'purple' | 'teal' | 'rose' | 'sky'
+export type AccentColor = 'indigo' | 'purple' | 'teal' | 'rose' | 'sky' | 'zinc'
 
 export interface AppSettings {
   mode: ThemeMode
