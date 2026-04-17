@@ -196,11 +196,15 @@ export default function TaskBoardPage() {
               <button onClick={() => setAddModal(true)} style={{
                 display: 'block', width: '100%', padding: '12px',
                 marginBottom: 16, borderRadius: 10,
-                border: '1.5px dashed var(--border-focus)', background: 'var(--bg-raised)',
-                color: 'var(--border-focus)', fontSize: '0.85rem', fontWeight: 600,
+                border: '1.5px dashed var(--accent)',
+                background: 'color-mix(in srgb, var(--accent) 12%, transparent)',
+                color: 'var(--accent)', fontSize: '0.85rem', fontWeight: 600,
                 cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center',
-                transition: 'background 0.15s',
-              }}>＋ 新しいタスクの追加</button>
+                transition: 'background 0.15s, opacity 0.15s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--accent) 18%, transparent)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--accent) 12%, transparent)'}
+              >＋ 新しいタスクの追加</button>
 
               {localTasks.length === 0 ? (
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', paddingTop: 20 }}>
