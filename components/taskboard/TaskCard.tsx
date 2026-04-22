@@ -29,7 +29,7 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: task.id, disabled: isOverlay })
+  } = useSortable({ id: task.id, disabled: isOverlay || task.progress === 100 })
 
   // If this is the active dragging item (the placeholder left in the list), make it an empty box
   const isPlaceholder = isDragging && !isOverlay;
@@ -67,8 +67,8 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
             {...attributes}
             {...listeners}
             style={{
-              cursor: isOverlay ? 'grabbing' : (isPlaceholder ? 'grabbing' : 'grab'),
-              color: '#cbd5e1',
+              cursor: isOverlay ? 'grabbing' : (isPlaceholder ? 'grabbing' : (task.progress === 100 ? 'default' : 'grab')),
+              color: task.progress === 100 ? 'transparent' : '#cbd5e1',
               padding: '6px 2px',
               display: 'flex',
               alignItems: 'center',

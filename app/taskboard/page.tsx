@@ -41,6 +41,7 @@ export default function TaskBoardPage() {
   const [newRecurrence, setNewRecurrence] = useState('none')
   const [addLoading, setAddLoading] = useState(false)
   const [addError, setAddError] = useState('')
+  const [showCompleted, setShowCompleted] = useState(false)
 
   useEffect(() => {
     (async () => {
@@ -216,29 +217,62 @@ export default function TaskBoardPage() {
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', paddingTop: 20 }}>
                   まだタスクがありません
                 </p>
-              ) : (
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragStart={handleDragStart}
-                  onDragOver={handleDragOver}
-                  onDragEnd={handleDragEnd}
-                  onDragCancel={handleDragCancel}
-                  modifiers={[restrictToVerticalAxis]}
-                >
-                  <SortableContext
-                    items={localTasks.map((t) => t.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <div style={{ maxHeight: 420, overflowY: 'auto' }}>
-                      {localTasks.map((t) => <TaskCard key={t.id} task={t} />)}
-                    </div>
-                  </SortableContext>
-                  <DragOverlay>
-                    {activeDragTask ? <TaskCard task={activeDragTask} isOverlay /> : null}
-                  </DragOverlay>
-                </DndContext>
-              )}
+              ) : (() => {
+                const incompleteTasks = localTasks.filter(t => t.progress < 100);
+                const completedTasks = localTasks.filter(t => t.progress === 100);
+                
+                return (
+                  <div style={{ maxHeight: 'calc(100vh - 280px)', minHeight: 200, overflowY: 'auto', paddingRight: 4, paddingBottom: 20 }}>
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragStart={handleDragStart}
+                      onDragOver={handleDragOver}
+                      onDragEnd={handleDragEnd}
+                      onDragCancel={handleDragCancel}
+                      modifiers={[restrictToVerticalAxis]}
+                    >
+                      <SortableContext
+                        items={incompleteTasks.map((t) => t.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        {incompleteTasks.map((t) => <TaskCard key={t.id} task={t} />)}
+                      </SortableContext>
+                      <DragOverlay>
+                        {activeDragTask ? <TaskCard task={activeDragTask} isOverlay /> : null}
+                      </DragOverlay>
+                    </DndContext>
+
+                    {completedTasks.length > 0 && (
+                      <div style={{ marginTop: incompleteTasks.length > 0 ? 12 : 0 }}>
+                        <button
+                          onClick={() => setShowCompleted(!showCompleted)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 6,
+                            background: 'transparent', border: 'none',
+                            color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600,
+                            cursor: 'pointer', padding: '6px 8px', borderRadius: 8,
+                            transition: 'background 0.15s',
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-raised)'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showCompleted ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                          </svg>
+                          完了済みのタスク ({completedTasks.length})
+                        </button>
+
+                        {showCompleted && (
+                          <div style={{ marginTop: 12 }}>
+                            {completedTasks.map((t) => <TaskCard key={t.id} task={t} />)}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           </div>
         ) : null}
