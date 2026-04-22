@@ -4,7 +4,7 @@ import {
   useState, ReactNode,
 } from 'react'
 import type { Goal, Task, WizardState } from '@/types'
-import { goalApi, taskApi, authApi } from '@/lib/api'
+import { goalApi, taskApi, authApi, activityApi } from '@/lib/api'
 
 interface GoalContextValue {
   goals: Goal[]
@@ -24,7 +24,7 @@ interface GoalContextValue {
   deleteGoal: (id: string) => Promise<void>
 
   createTask: (goalId: string, title: string, memo?: string, recurrence?: string) => Promise<Task>
-  updateTask: (id: string, patch: Partial<Pick<Task, 'title' | 'memo' | 'progress'>>) => Promise<void>
+  updateTask: (id: string, patch: Partial<Pick<Task, 'title' | 'memo' | 'progress' | 'order'>>) => Promise<void>
   deleteTask: (id: string) => Promise<void>
   cancelRecurrence: (taskId: string, templateId: string) => Promise<void>
   reorderTasks: (updatedTasks: Task[]) => Promise<void>
@@ -52,6 +52,8 @@ export function GoalProvider({ children }: { children: ReactNode }) {
     try {
       await authApi.me()
       setIsAuthenticated(true)
+      // バックグラウンドで今日のログイン記録をつける (エラーは無視して良い)
+      activityApi.recordLogin().catch(() => {})
       // Note: isInitialized is set AFTER refreshData in page.tsx or here if we want but 
       // let's be careful. Actually, let's let the caller decide or set it here if simple.
       // Better: let's handle the "full init" in checkAuth for simplicity.

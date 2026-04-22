@@ -152,3 +152,13 @@ export const achievementApi = {
   }> =>
     request(`/api/achievements?months=${months}`),
 }
+
+// ── Activity (Login Record) ──────────────────────
+
+export const activityApi = {
+  recordLogin: (): Promise<any> =>
+    request('/api/activities', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'login' }),
+    }),
+}

@@ -40,6 +40,18 @@ export async function GET(request: Request) {
       }
     })
 
+    // Activity テーブル（ログイン履歴など）も取得
+    const activityLogs = await prisma.activity.findMany({
+      where: {
+        user_id: userId,
+        created_at: { gte: startDate }
+      },
+      select: {
+        action: true,
+        created_at: true
+      }
+    })
+
     const activities: Record<string, number> = {}
     let totalCompleted = 0
     let totalTasks = tasks.length
@@ -85,6 +97,12 @@ export async function GET(request: Request) {
           monthlyData[monthKey].completed += 1
         }
       }
+    })
+
+    // Activityログ（ログイン等）の加算
+    activityLogs.forEach(log => {
+      const logDate = toJSTDateString(log.created_at)
+      activities[logDate] = (activities[logDate] || 0) + 1
     })
 
     const averageProgress = totalTasks > 0 ? Math.round(totalProgressSum / totalTasks) : 0
