@@ -15,7 +15,7 @@ interface TaskCardProps {
 }
 
 export default function TaskCard({ task, isOverlay }: TaskCardProps) {
-  const { updateTask, deleteTask } = useGoals()
+  const { updateTask, deleteTask, cancelRecurrence } = useGoals()
   const [editModal, setEditModal] = useState(false)
   const [editTitle, setEditTitle] = useState(task.title)
   const [editMemo, setEditMemo] = useState(task.memo)
@@ -174,6 +174,14 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
       <Modal isOpen={editModal} onClose={() => setEditModal(false)} title="タスクを編集"
         actions={
           <>
+            {isRecurring && (
+              <Button variant="ghost" onClick={async () => {
+                if (confirm('以降の自動生成を停止しますか？（現在のタスクはそのまま残ります）')) {
+                  await cancelRecurrence(task.id, task.template_id!);
+                  setEditModal(false);
+                }
+              }} style={{ color: 'var(--danger)', marginRight: 'auto' }}>定期を解除</Button>
+            )}
             <Button variant="ghost" onClick={() => setEditModal(false)}>キャンセル</Button>
             <Button variant="danger" size="sm" onClick={() => deleteTask(task.id)}>削除</Button>
             <Button onClick={handleSave} loading={saving}>保存</Button>

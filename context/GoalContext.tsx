@@ -26,6 +26,7 @@ interface GoalContextValue {
   createTask: (goalId: string, title: string, memo?: string, recurrence?: string) => Promise<Task>
   updateTask: (id: string, patch: Partial<Pick<Task, 'title' | 'memo' | 'progress'>>) => Promise<void>
   deleteTask: (id: string) => Promise<void>
+  cancelRecurrence: (taskId: string, templateId: string) => Promise<void>
   reorderTasks: (updatedTasks: Task[]) => Promise<void>
 
   // Wizard
@@ -132,6 +133,11 @@ export function GoalProvider({ children }: { children: ReactNode }) {
     setTasks((prev) => prev.filter((x) => x.id !== id))
   }, [])
 
+  const cancelRecurrence = useCallback(async (taskId: string, templateId: string) => {
+    await taskApi.delete(templateId)
+    setTasks((prev) => prev.map((x) => (x.id === taskId ? { ...x, template_id: null } : x)))
+  }, [])
+
   const reorderTasks = useCallback(async (updatedTasks: Task[]) => {
     // Optimistic UI update for the goal's tasks
     setTasks((prev) => {
@@ -197,7 +203,7 @@ export function GoalProvider({ children }: { children: ReactNode }) {
         goals, tasks, isLoading, isAuthenticated, isInitialized,
         checkAuth, logout, refreshData,
         createGoal, updateGoal, deleteGoal,
-        createTask, updateTask, deleteTask, reorderTasks,
+        createTask, updateTask, deleteTask, cancelRecurrence, reorderTasks,
         submitWizard,
       }}
     >
