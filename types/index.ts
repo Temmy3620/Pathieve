@@ -30,6 +30,9 @@ export interface Task {
   /** Progress 0–100 */
   progress: number
   order: number
+  recurrence?: string | null
+  is_template?: boolean
+  template_id?: string | null
   created_at: string
   updated_at: string
 }
@@ -85,6 +88,7 @@ export interface CreateTaskPayload {
   title: string
   memo?: string
   progress?: number
+  recurrence?: string
 }
 
 export interface UpdateTaskPayload {

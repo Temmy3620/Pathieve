@@ -14,23 +14,51 @@ export async function POST(request: Request) {
     const userId = await getUser(request)
     if (!userId) return NextResponse.json({ detail: 'Not authenticated' }, { status: 401 })
 
-    const { goal_id, title, memo, progress } = await request.json()
+    const { goal_id, title, memo, progress, recurrence } = await request.json()
 
     const goal = await prisma.goal.findUnique({ where: { id: goal_id } })
     if (!goal || goal.user_id !== userId) {
       return NextResponse.json({ detail: 'Goal not found' }, { status: 404 })
     }
 
-    const task = await prisma.task.create({
-      data: {
-        goal_id,
-        title,
-        memo: memo || '',
-        progress: progress || 0,
-      }
-    })
-
-    return NextResponse.json(task, { status: 201 })
+    if (recurrence && recurrence !== 'none') {
+      // Create master template
+      const template = await prisma.task.create({
+        data: {
+          goal_id,
+          title,
+          memo: memo || '',
+          progress: 0,
+          recurrence,
+          is_template: true,
+        }
+      })
+      
+      // Create first instance
+      const task = await prisma.task.create({
+        data: {
+          goal_id,
+          title,
+          memo: memo || '',
+          progress: progress || 0,
+          template_id: template.id,
+          is_template: false,
+        }
+      })
+      return NextResponse.json(task, { status: 201 })
+    } else {
+      // Normal task
+      const task = await prisma.task.create({
+        data: {
+          goal_id,
+          title,
+          memo: memo || '',
+          progress: progress || 0,
+          is_template: false,
+        }
+      })
+      return NextResponse.json(task, { status: 201 })
+    }
   } catch (error: any) {
     return NextResponse.json({ detail: 'Internal Server Error' }, { status: 500 })
   }

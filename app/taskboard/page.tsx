@@ -38,6 +38,7 @@ export default function TaskBoardPage() {
   const [addModal, setAddModal] = useState(false)
   const [newTitle, setNewTitle] = useState('')
   const [newMemo, setNewMemo] = useState('')
+  const [newRecurrence, setNewRecurrence] = useState('none')
   const [addLoading, setAddLoading] = useState(false)
   const [addError, setAddError] = useState('')
 
@@ -80,8 +81,8 @@ export default function TaskBoardPage() {
     if (!activeGoalId) return
     setAddLoading(true)
     try {
-      await createTask(activeGoalId, newTitle.trim(), newMemo.trim())
-      setNewTitle(''); setNewMemo(''); setAddModal(false)
+      await createTask(activeGoalId, newTitle.trim(), newMemo.trim(), newRecurrence)
+      setNewTitle(''); setNewMemo(''); setNewRecurrence('none'); setAddModal(false)
     } catch (e) {
       setAddError(e instanceof Error ? e.message : 'エラーが発生しました')
     } finally { setAddLoading(false) }
@@ -249,6 +250,23 @@ export default function TaskBoardPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <Input label="タスク名" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} autoFocus />
             <Input label="メモ（任意）" value={newMemo} onChange={(e) => setNewMemo(e.target.value)} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>繰り返し</label>
+              <select
+                value={newRecurrence}
+                onChange={(e) => setNewRecurrence(e.target.value)}
+                style={{
+                  width: '100%', padding: '10px 12px', borderRadius: 10,
+                  border: '1.5px solid var(--border)', background: 'var(--bg-panel)',
+                  color: 'var(--text-primary)', fontSize: '0.9rem',
+                  outline: 'none',
+                }}
+              >
+                <option value="none">なし（1回きり）</option>
+                <option value="daily">毎日</option>
+                <option value="weekly">毎週</option>
+              </select>
+            </div>
             {addError && <p style={{ fontSize: '0.82rem', color: 'var(--danger)' }}>{addError}</p>}
           </div>
         </Modal>

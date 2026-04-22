@@ -34,6 +34,7 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
   // If this is the active dragging item (the placeholder left in the list), make it an empty box
   const isPlaceholder = isDragging && !isOverlay;
   const showAsDone = task.progress === 100 && !isOverlay && !isPlaceholder;
+  const isRecurring = !!task.template_id;
 
   const handleSave = async () => {
     setSaving(true)
@@ -86,20 +87,70 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
           </div>
 
           <div style={{ flex: 1 }}>
-            <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: '0 0 3px', color: showAsDone ? 'var(--text-muted)' : 'var(--text-primary)', lineHeight: 1.4 }}>
-              {task.title}
+            <p style={{ fontWeight: 600, fontSize: '0.9rem', margin: '0 0 3px', color: showAsDone ? 'var(--text-muted)' : 'var(--text-primary)', lineHeight: 1.4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+              <span>{task.title}</span>
+              {task.template_id && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', fontSize: '0.65rem', background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', padding: '2px 6px', borderRadius: 6, fontWeight: 700, letterSpacing: '0.02em', border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)' }}>
+                  <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4 }}>
+                    <path d="M17 2l4 4-4 4" />
+                    <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+                    <path d="M7 22l-4-4 4-4" opacity="0.4" />
+                    <path d="M21 13v1a4 4 0 0 1-4 4H3" opacity="0.4" />
+                  </svg>
+                  定期
+                </span>
+              )}
             </p>
             {task.memo && (
               <p style={{ fontSize: '0.75rem', color: showAsDone ? 'var(--text-muted)' : 'var(--text-secondary)', margin: '0 0 8px', lineHeight: 1.4, opacity: showAsDone ? 0.6 : 1 }}>
                 memo:{task.memo}
               </p>
             )}
-            <div style={{ opacity: showAsDone ? 0.6 : 1 }}>
-              <ProgressBar value={task.progress} label="プログレス" />
-            </div>
+            {!isRecurring && (
+              <div style={{ opacity: showAsDone ? 0.6 : 1 }}>
+                <ProgressBar value={task.progress} label="プログレス" />
+              </div>
+            )}
           </div>
-          <button
-            onClick={() => { setEditTitle(task.title); setEditMemo(task.memo); setEditProgress(task.progress); setEditModal(true) }}
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {isRecurring && (
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  await updateTask(task.id, { progress: task.progress === 100 ? 0 : 100 });
+                }}
+                title={task.progress === 100 ? "未完了に戻す" : "完了にする"}
+                style={{
+                  flexShrink: 0, height: 30,
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '0 12px 0 8px',
+                  borderRadius: 15,
+                  border: task.progress === 100 ? '1.5px solid var(--accent)' : '1.5px solid var(--border)',
+                  background: task.progress === 100 ? 'var(--accent)' : 'var(--bg-surface)',
+                  cursor: 'pointer',
+                  color: task.progress === 100 ? '#fff' : 'var(--text-secondary)',
+                  transition: 'all 0.15s',
+                  fontSize: '0.75rem',
+                  fontWeight: 600
+                }}
+              >
+                <div style={{
+                  width: 16, height: 16, borderRadius: '50%',
+                  border: task.progress === 100 ? 'none' : '1.5px solid var(--border)',
+                  background: task.progress === 100 ? '#fff' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={task.progress === 100 ? "var(--accent)" : "currentColor"} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: task.progress === 100 ? 1 : 0 }}>
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+                {task.progress === 100 ? '完了' : '完了にする'}
+              </button>
+            )}
+            
+            <button
+              onClick={() => { setEditTitle(task.title); setEditMemo(task.memo); setEditProgress(task.progress); setEditModal(true) }}
             title="編集"
             style={{
               flexShrink: 0, width: 30, height: 30,
@@ -117,6 +168,7 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
             </svg>
           </button>
         </div>
+        </div>
       </div>
 
       <Modal isOpen={editModal} onClose={() => setEditModal(false)} title="タスクを編集"
@@ -131,15 +183,28 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <Input label="タスク名" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
           <Input label="メモ" value={editMemo} onChange={(e) => setEditMemo(e.target.value)} />
-          <div>
-            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
-              進捗度: {editProgress}%
-            </label>
-            <input type="range" min={0} max={100} step={5} value={editProgress}
-              onChange={(e) => setEditProgress(Number(e.target.value))}
-              style={{ width: '100%', accentColor: 'var(--accent)' }} />
-            <ProgressBar value={editProgress} showValue={false} />
-          </div>
+          {!isRecurring ? (
+            <div>
+              <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
+                進捗度: {editProgress}%
+              </label>
+              <input type="range" min={0} max={100} step={5} value={editProgress}
+                onChange={(e) => setEditProgress(Number(e.target.value))}
+                style={{ width: '100%', accentColor: 'var(--accent)' }} />
+              <ProgressBar value={editProgress} showValue={false} />
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+              <input type="checkbox" id="recurring-complete" 
+                checked={editProgress === 100}
+                onChange={(e) => setEditProgress(e.target.checked ? 100 : 0)}
+                style={{ width: 18, height: 18, accentColor: 'var(--accent)', cursor: 'pointer' }}
+              />
+              <label htmlFor="recurring-complete" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', cursor: 'pointer' }}>
+                このタスクを完了にする
+              </label>
+            </div>
+          )}
         </div>
       </Modal>
     </>
