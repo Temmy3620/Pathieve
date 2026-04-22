@@ -63,7 +63,12 @@ export default function TaskBoardPage() {
   const monthGoals = goals.filter((g) => g.level === '1month')
   const activeGoal = goals.find((g) => g.id === activeGoalId)
   
-  const activeTasksFromContext = [...tasks.filter((t) => t.goal_id === activeGoalId)].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+  const activeTasksFromContext = [...tasks.filter((t) => t.goal_id === activeGoalId)].sort((a, b) => {
+    const aDone = a.progress === 100 ? 1 : 0
+    const bDone = b.progress === 100 ? 1 : 0
+    if (aDone !== bDone) return aDone - bDone
+    return (a.order ?? 0) - (b.order ?? 0)
+  })
   const [localTasks, setLocalTasks] = useState(activeTasksFromContext)
 
   useEffect(() => {
