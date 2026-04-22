@@ -1,4 +1,5 @@
 'use client'
+import Select from '@/components/ui/Select'
 
 interface TrendData {
   month: string
@@ -8,9 +9,11 @@ interface TrendData {
 
 interface TrendChartProps {
   data: TrendData[]
+  months: number
+  onMonthsChange: (m: number) => void
 }
 
-export default function TrendChart({ data }: TrendChartProps) {
+export default function TrendChart({ data, months, onMonthsChange }: TrendChartProps) {
   if (!data || data.length === 0) return null
 
   // グラフのサイズ設定
@@ -26,13 +29,25 @@ export default function TrendChart({ data }: TrendChartProps) {
       border: '1.5px solid var(--border)', boxShadow: '0 4px 20px rgba(99,102,241,0.05)',
       marginBottom: 24
     }}>
-      <div style={{ marginBottom: 24 }}>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 4px', color: 'var(--text-primary)' }}>
-          月別トレンド
-        </h3>
-        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>
-          過去数ヶ月のタスク完了数と平均達成度の推移です。
-        </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+        <div>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 4px', color: 'var(--text-primary)' }}>
+            月別トレンド
+          </h3>
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>
+            過去数ヶ月のタスク完了数と平均達成度の推移です。
+          </p>
+        </div>
+        <Select
+          value={months}
+          onChange={(e) => onMonthsChange(Number(e.target.value))}
+          options={[
+            { label: '直近1ヶ月', value: 1 },
+            { label: '直近3ヶ月', value: 3 },
+            { label: '直近6ヶ月', value: 6 },
+            { label: '直近1年', value: 12 },
+          ]}
+        />
       </div>
 
       <div style={{ position: 'relative', height, width: '100%', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', paddingTop: 20 }}>

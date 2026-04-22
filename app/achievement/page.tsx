@@ -5,6 +5,7 @@ import { achievementApi } from '@/lib/api'
 import ActivityCalendar from '@/components/achievement/ActivityCalendar'
 import MetricsBoard from '@/components/achievement/MetricsBoard'
 import TrendChart from '@/components/achievement/TrendChart'
+import Select from '@/components/ui/Select'
 import { useGoals } from '@/context/GoalContext'
 
 export default function AchievementPage() {
@@ -71,7 +72,7 @@ export default function AchievementPage() {
 
         {/* 月別トレンドグラフ */}
         {!loading && data && data.monthlyTrends && (
-          <TrendChart data={data.monthlyTrends} />
+          <TrendChart data={data.monthlyTrends} months={months} onMonthsChange={setMonths} />
         )}
 
         {/* 葉っぱのカレンダー部分はローディングと期間切り替えあり */}
@@ -92,49 +93,16 @@ export default function AchievementPage() {
               ログインやタスクのちょっとした進捗でも葉っぱが色づきます。継続は力なり！
             </p>
           </div>
-          <div style={{ position: 'relative', display: 'inline-block' }}>
-            <select
-              value={months}
-              onChange={(e) => setMonths(Number(e.target.value))}
-              style={{
-                appearance: 'none',
-                WebkitAppearance: 'none',
-                padding: '8px 36px 8px 12px',
-                borderRadius: '6px',
-                border: '1px solid var(--border)',
-                background: 'var(--bg-surface)',
-                color: 'var(--text-primary)',
-                fontSize: '0.875rem',
-                fontWeight: 500,
-                outline: 'none',
-                cursor: 'pointer',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                transition: 'border-color 0.2s, box-shadow 0.2s',
-              }}
-              onFocus={(e) => {
-                e.target.style.outline = '2px solid color-mix(in srgb, var(--text-primary) 20%, transparent)'
-                e.target.style.outlineOffset = '2px'
-              }}
-              onBlur={(e) => {
-                e.target.style.outline = 'none'
-              }}
-            >
-              <option value={1}>直近1ヶ月</option>
-              <option value={3}>直近3ヶ月</option>
-              <option value={6}>直近6ヶ月</option>
-              <option value={12}>直近1年</option>
-            </select>
-            <svg
-              width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-              style={{
-                position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
-                pointerEvents: 'none', color: 'var(--text-muted)'
-              }}
-            >
-              <path d="m6 9 6 6 6-6"/>
-            </svg>
-          </div>
+          <Select
+            value={months}
+            onChange={(e) => setMonths(Number(e.target.value))}
+            options={[
+              { label: '直近1ヶ月', value: 1 },
+              { label: '直近3ヶ月', value: 3 },
+              { label: '直近6ヶ月', value: 6 },
+              { label: '直近1年', value: 12 },
+            ]}
+          />
         </div>
 
         {loading ? (
