@@ -191,13 +191,36 @@ export default function TaskBoardPage() {
 
             {/* Right: tasks */}
             <div style={{ padding: 24 }}>
-              <div style={{ marginBottom: 16 }}>
-                <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 2px' }}>
-                  1ヶ月のマイルストーン
-                </h2>
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0 }}>
-                  1ヶ月で達成予定のタスク — 進捗 {avgProgress}%
-                </p>
+              <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 2px' }}>
+                    1ヶ月のマイルストーン
+                  </h2>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0 }}>
+                    1ヶ月で達成予定のタスク — 進捗 {avgProgress}%
+                  </p>
+                </div>
+                
+                {/* 完了済み表示スイッチ */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>完了済みを表示</span>
+                  <button
+                    onClick={() => setShowCompleted(!showCompleted)}
+                    style={{
+                      width: 36, height: 20, borderRadius: 10,
+                      background: showCompleted ? 'var(--accent)' : 'var(--bg-raised)',
+                      border: showCompleted ? '1.5px solid var(--accent)' : '1.5px solid var(--border)',
+                      position: 'relative', cursor: 'pointer', transition: 'all 0.2s',
+                      display: 'flex', alignItems: 'center', padding: 0
+                    }}
+                  >
+                    <div style={{
+                      width: 14, height: 14, borderRadius: '50%', background: '#fff',
+                      position: 'absolute', left: showCompleted ? 17 : 1,
+                      transition: 'all 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.15)'
+                    }} />
+                  </button>
+                </div>
               </div>
 
               <button onClick={() => setAddModal(true)} style={{
@@ -243,31 +266,10 @@ export default function TaskBoardPage() {
                       </DragOverlay>
                     </DndContext>
 
-                    {completedTasks.length > 0 && (
-                      <div style={{ marginTop: incompleteTasks.length > 0 ? 12 : 0 }}>
-                        <button
-                          onClick={() => setShowCompleted(!showCompleted)}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: 6,
-                            background: 'transparent', border: 'none',
-                            color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600,
-                            cursor: 'pointer', padding: '6px 8px', borderRadius: 8,
-                            transition: 'background 0.15s',
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-raised)'}
-                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showCompleted ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
-                            <polyline points="9 18 15 12 9 6"></polyline>
-                          </svg>
-                          完了済みのタスク ({completedTasks.length})
-                        </button>
-
-                        {showCompleted && (
-                          <div style={{ marginTop: 12 }}>
-                            {completedTasks.map((t) => <TaskCard key={t.id} task={t} />)}
-                          </div>
-                        )}
+                    {showCompleted && completedTasks.length > 0 && (
+                      <div style={{ marginTop: 12 }}>
+                        <div style={{ height: 1.5, background: 'var(--border)', margin: '16px 0', opacity: 0.6 }} />
+                        {completedTasks.map((t) => <TaskCard key={t.id} task={t} />)}
                       </div>
                     )}
                   </div>
