@@ -145,6 +145,10 @@ export const userApi = {
 // ── Achievement ──────────────────────────
 
 export const achievementApi = {
-  get: (months: number = 3): Promise<{ activities: Record<string, number>, metrics: { totalCompleted: number, totalTasks: number, averageProgress: number } }> =>
+  get: (months: number = 3): Promise<{
+    activities: Record<string, number>,
+    metrics: { totalCompleted: number, totalTasks: number, averageProgress: number },
+    monthlyTrends: { month: string, completed: number, progress: number }[]
+  }> =>
     request(`/api/achievements?months=${months}`),
 }

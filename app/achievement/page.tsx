@@ -4,11 +4,12 @@ import AppShell from '@/components/layout/AppShell'
 import { achievementApi } from '@/lib/api'
 import ActivityCalendar from '@/components/achievement/ActivityCalendar'
 import MetricsBoard from '@/components/achievement/MetricsBoard'
+import TrendChart from '@/components/achievement/TrendChart'
 import { useGoals } from '@/context/GoalContext'
 
 export default function AchievementPage() {
   const [months, setMonths] = useState(3)
-  const [data, setData] = useState<{ activities: Record<string, number>, metrics: any } | null>(null)
+  const [data, setData] = useState<{ activities: Record<string, number>, metrics: any, monthlyTrends: any[] } | null>(null)
   const [loading, setLoading] = useState(true)
   const { tasks, goals, isInitialized, checkAuth, refreshData } = useGoals()
 
@@ -67,6 +68,11 @@ export default function AchievementPage() {
 
         {/* Metricsはローカルデータから常に表示 */}
         <MetricsBoard metrics={localMetrics} />
+
+        {/* 月別トレンドグラフ */}
+        {!loading && data && data.monthlyTrends && (
+          <TrendChart data={data.monthlyTrends} />
+        )}
 
         {/* 葉っぱのカレンダー部分はローディングと期間切り替えあり */}
         <div style={{

@@ -45,6 +45,14 @@ export async function GET(request: Request) {
     let totalTasks = tasks.length
     let totalProgressSum = 0
 
+    // 月別集計用のデータ構造を初期化 (過去 months ヶ月分)
+    const monthlyData: Record<string, { total: number, completed: number, progressSum: number }> = {}
+    for (let i = months - 1; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+      const key = `${d.getMonth() + 1}月`
+      monthlyData[key] = { total: 0, completed: 0, progressSum: 0 }
+    }
+
     // 日付をYYYY-MM-DD (JST) で取得するヘルパー
     const toJSTDateString = (d: Date) => {
       const jstDate = new Date(d.getTime() + 9 * 60 * 60 * 1000)
@@ -66,9 +74,29 @@ export async function GET(request: Request) {
       if (task.progress === 100) {
         totalCompleted++
       }
+      // 月別集計 (作成日を基準とする)
+      const taskDate = new Date(task.created_at.getTime() + 9 * 60 * 60 * 1000)
+      const monthKey = `${taskDate.getUTCMonth() + 1}月`
+
+      if (monthlyData[monthKey]) {
+        monthlyData[monthKey].total += 1
+        monthlyData[monthKey].progressSum += task.progress
+        if (task.progress === 100) {
+          monthlyData[monthKey].completed += 1
+        }
+      }
     })
 
     const averageProgress = totalTasks > 0 ? Math.round(totalProgressSum / totalTasks) : 0
+
+    const monthlyTrends = Object.keys(monthlyData).map(month => {
+      const d = monthlyData[month]
+      return {
+        month,
+        completed: d.completed,
+        progress: d.total > 0 ? Math.round(d.progressSum / d.total) : 0
+      }
+    })
 
     return NextResponse.json({
       activities, // { "2024-05-01": 2, ... }
@@ -76,7 +104,8 @@ export async function GET(request: Request) {
         totalCompleted,
         totalTasks,
         averageProgress,
-      }
+      },
+      monthlyTrends
     })
   } catch (error: any) {
     console.error('Achievement GET Error:', error)
