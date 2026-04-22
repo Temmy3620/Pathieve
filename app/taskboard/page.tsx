@@ -293,20 +293,48 @@ export default function TaskBoardPage() {
             <Input label="メモ（任意）" value={newMemo} onChange={(e) => setNewMemo(e.target.value)} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>繰り返し</label>
-              <select
-                value={newRecurrence}
-                onChange={(e) => setNewRecurrence(e.target.value)}
-                style={{
-                  width: '100%', padding: '10px 12px', borderRadius: 10,
-                  border: '1.5px solid var(--border)', background: 'var(--bg-panel)',
-                  color: 'var(--text-primary)', fontSize: '0.9rem',
-                  outline: 'none',
-                }}
-              >
-                <option value="none">なし（1回きり）</option>
-                <option value="daily">毎日</option>
-                <option value="weekly">毎週</option>
-              </select>
+              <div style={{ position: 'relative', width: '100%' }}>
+                <select
+                  value={newRecurrence}
+                  onChange={(e) => setNewRecurrence(e.target.value)}
+                  style={{
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
+                    width: '100%',
+                    padding: '10px 36px 10px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border)',
+                    background: 'var(--bg-panel)',
+                    color: 'var(--text-primary)',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    cursor: 'pointer',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.outline = '2px solid color-mix(in srgb, var(--accent) 50%, transparent)'
+                    e.target.style.outlineOffset = '1px'
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.outline = 'none'
+                  }}
+                >
+                  <option value="none">なし（1回きり）</option>
+                  <option value="daily">毎日</option>
+                  <option value="weekly">毎週</option>
+                </select>
+                <svg
+                  width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                  style={{
+                    position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                    pointerEvents: 'none', color: 'var(--text-muted)'
+                  }}
+                >
+                  <path d="m6 9 6 6 6-6"/>
+                </svg>
+              </div>
             </div>
             {addError && <p style={{ fontSize: '0.82rem', color: 'var(--danger)' }}>{addError}</p>}
           </div>

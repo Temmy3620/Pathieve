@@ -141,3 +141,10 @@ export const userApi = {
   resetData: (): Promise<void> =>
     request('/api/user/reset', { method: 'DELETE' }),
 }
+
+// ── Achievement ──────────────────────────
+
+export const achievementApi = {
+  get: (months: number = 3): Promise<{ activities: Record<string, number>, metrics: { totalCompleted: number, totalTasks: number, averageProgress: number } }> =>
+    request(`/api/achievements?months=${months}`),
+}
