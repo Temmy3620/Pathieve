@@ -1,0 +1,20 @@
+name: Periodic Task Notifications
+
+on:
+  schedule:
+    # 15分ごとに実行 (UTC時間での指定ですが、15分刻みは影響なし)
+    - cron: '*/15 * * * *'
+  # 手動でも実行できるようにする
+  workflow_dispatch:
+
+jobs:
+  notify-tasks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Notification API
+        run: |
+          # ユーザー環境に合わせて、GitHub Secretsに API_BASE_URL と CRON_SECRET を設定する必要があります。
+          # API_BASE_URL 例: https://pathieve.vercel.app
+          curl -X POST "${{ secrets.API_BASE_URL }}/api/cron/notify-tasks" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"

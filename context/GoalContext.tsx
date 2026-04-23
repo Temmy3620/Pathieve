@@ -23,7 +23,7 @@ interface GoalContextValue {
   updateGoal: (id: string, title: string) => Promise<void>
   deleteGoal: (id: string) => Promise<void>
 
-  createTask: (goalId: string, title: string, memo?: string, recurrence?: string) => Promise<Task>
+  createTask: (goalId: string, title: string, memo?: string, recurrence?: string, notification_time?: string, notification_days?: string) => Promise<Task>
   updateTask: (id: string, patch: Partial<Pick<Task, 'title' | 'memo' | 'progress' | 'order'>>) => Promise<void>
   deleteTask: (id: string) => Promise<void>
   cancelRecurrence: (taskId: string, templateId: string) => Promise<void>
@@ -114,8 +114,8 @@ export function GoalProvider({ children }: { children: ReactNode }) {
 
   // Task CRUD
   const createTask = useCallback(
-    async (goalId: string, title: string, memo = '', recurrence = 'none') => {
-      const t = await taskApi.create({ goal_id: goalId, title, memo, progress: 0, recurrence })
+    async (goalId: string, title: string, memo = '', recurrence = 'none', notification_time?: string, notification_days?: string) => {
+      const t = await taskApi.create({ goal_id: goalId, title, memo, progress: 0, recurrence, notification_time, notification_days })
       setTasks((prev) => [...prev, t])
       return t
     },

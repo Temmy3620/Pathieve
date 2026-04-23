@@ -45,7 +45,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       return NextResponse.json({ detail: 'Task not found' }, { status: 404 })
     }
 
-    const { title, memo, progress } = await request.json()
+    const { title, memo, progress, notification_time, notification_days } = await request.json()
     
     if (progress !== undefined && (progress < 0 || progress > 100)) {
         return NextResponse.json({ detail: 'progress must be 0–100' }, { status: 422 })
@@ -57,6 +57,8 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         ...(title !== undefined ? { title } : {}),
         ...(memo !== undefined ? { memo } : {}),
         ...(progress !== undefined ? { progress } : {}),
+        ...(notification_time !== undefined ? { notification_time } : {}),
+        ...(notification_days !== undefined ? { notification_days } : {}),
       }
     })
 

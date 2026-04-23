@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const userId = await getUser(request)
     if (!userId) return NextResponse.json({ detail: 'Not authenticated' }, { status: 401 })
 
-    const { goal_id, title, memo, progress, recurrence } = await request.json()
+    const { goal_id, title, memo, progress, recurrence, notification_time, notification_days } = await request.json()
 
     const goal = await prisma.goal.findUnique({ where: { id: goal_id } })
     if (!goal || goal.user_id !== userId) {
@@ -30,6 +30,8 @@ export async function POST(request: Request) {
           memo: memo || '',
           progress: 0,
           recurrence,
+          notification_time,
+          notification_days,
           is_template: true,
         }
       })
@@ -43,6 +45,8 @@ export async function POST(request: Request) {
           progress: progress || 0,
           template_id: template.id,
           is_template: false,
+          notification_time,
+          notification_days,
         }
       })
       return NextResponse.json(task, { status: 201 })

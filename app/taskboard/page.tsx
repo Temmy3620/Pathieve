@@ -39,6 +39,8 @@ export default function TaskBoardPage() {
   const [newTitle, setNewTitle] = useState('')
   const [newMemo, setNewMemo] = useState('')
   const [newRecurrence, setNewRecurrence] = useState('none')
+  const [newNotificationTime, setNewNotificationTime] = useState('09:00')
+  const [newNotificationDays, setNewNotificationDays] = useState<string[]>([])
   const [addLoading, setAddLoading] = useState(false)
   const [addError, setAddError] = useState('')
   const [showCompleted, setShowCompleted] = useState(false)
@@ -87,8 +89,10 @@ export default function TaskBoardPage() {
     if (!activeGoalId) return
     setAddLoading(true)
     try {
-      await createTask(activeGoalId, newTitle.trim(), newMemo.trim(), newRecurrence)
-      setNewTitle(''); setNewMemo(''); setNewRecurrence('none'); setAddModal(false)
+      const notifTime = newRecurrence !== 'none' ? newNotificationTime : undefined
+      const notifDays = newRecurrence === 'weekly' ? newNotificationDays.join(',') : undefined
+      await createTask(activeGoalId, newTitle.trim(), newMemo.trim(), newRecurrence, notifTime, notifDays)
+      setNewTitle(''); setNewMemo(''); setNewRecurrence('none'); setNewNotificationTime('09:00'); setNewNotificationDays([]); setAddModal(false)
     } catch (e) {
       setAddError(e instanceof Error ? e.message : 'エラーが発生しました')
     } finally { setAddLoading(false) }
@@ -336,6 +340,100 @@ export default function TaskBoardPage() {
                 </svg>
               </div>
             </div>
+
+            {newRecurrence !== 'none' && (
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>通知時間</label>
+                  <div style={{ position: 'relative', width: '100%' }}>
+                    <select
+                      value={newNotificationTime}
+                      onChange={(e) => setNewNotificationTime(e.target.value)}
+                      style={{
+                        appearance: 'none',
+                        WebkitAppearance: 'none',
+                        width: '100%',
+                        padding: '10px 36px 10px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border)',
+                        background: 'var(--bg-panel)',
+                        color: 'var(--text-primary)',
+                        fontSize: '0.9rem',
+                        outline: 'none',
+                        cursor: 'pointer',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                        transition: 'border-color 0.2s, box-shadow 0.2s',
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.outline = '2px solid color-mix(in srgb, var(--accent) 50%, transparent)'
+                        e.target.style.outlineOffset = '1px'
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.outline = 'none'
+                      }}
+                    >
+                      {Array.from({ length: 24 * 4 }).map((_, i) => {
+                        const h = Math.floor(i / 4).toString().padStart(2, '0');
+                        const m = ((i % 4) * 15).toString().padStart(2, '0');
+                        const time = `${h}:${m}`;
+                        return <option key={time} value={time}>{time}</option>;
+                      })}
+                    </select>
+                    <svg
+                      width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                      style={{
+                        position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                        pointerEvents: 'none', color: 'var(--text-muted)'
+                      }}
+                    >
+                      <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {newRecurrence === 'weekly' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>通知する曜日</label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                      {[
+                        { label: '日', val: '0' }, { label: '月', val: '1' },
+                        { label: '火', val: '2' }, { label: '水', val: '3' },
+                        { label: '木', val: '4' }, { label: '金', val: '5' },
+                        { label: '土', val: '6' }
+                      ].map((day) => {
+                        const isSelected = newNotificationDays.includes(day.val);
+                        return (
+                          <label key={day.val} style={{
+                            display: 'flex', alignItems: 'center', gap: 4,
+                            fontSize: '0.85rem', color: isSelected ? 'var(--accent)' : 'var(--text-muted)',
+                            cursor: 'pointer', padding: '6px 12px', borderRadius: 8,
+                            background: isSelected ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'var(--bg-raised)',
+                            border: `1.5px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}`,
+                            transition: 'all 0.2s',
+                            fontWeight: isSelected ? 600 : 500
+                          }}>
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setNewNotificationDays(prev => [...prev, day.val])
+                                } else {
+                                  setNewNotificationDays(prev => prev.filter(d => d !== day.val))
+                                }
+                              }}
+                              style={{ display: 'none' }}
+                            />
+                            {day.label}
+                          </label>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
             {addError && <p style={{ fontSize: '0.82rem', color: 'var(--danger)' }}>{addError}</p>}
           </div>
         </Modal>
