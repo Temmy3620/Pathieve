@@ -28,7 +28,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 
-export default function TaskBoardPage() {
+function TaskBoardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { goals, tasks, isInitialized, checkAuth, refreshData, createTask, reorderTasks } = useGoals()
@@ -439,5 +439,19 @@ export default function TaskBoardPage() {
         </Modal>
       </div>
     </AppShell>
+  )
+}
+
+import { Suspense } from 'react'
+
+export default function TaskBoardPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'var(--text-muted)' }}>
+        Loading...
+      </div>
+    }>
+      <TaskBoardContent />
+    </Suspense>
   )
 }
