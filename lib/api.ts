@@ -162,3 +162,10 @@ export const activityApi = {
       body: JSON.stringify({ action: 'login' }),
     }),
 }
+
+// ── Admin ────────────────────────────────────────
+
+export const adminApi = {
+  getUsers: (): Promise<any[]> =>
+    request('/api/admin/users'),
+}

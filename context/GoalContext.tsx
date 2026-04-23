@@ -3,7 +3,7 @@ import {
   createContext, useContext, useCallback,
   useState, ReactNode,
 } from 'react'
-import type { Goal, Task, WizardState } from '@/types'
+import type { Goal, Task, WizardState, User } from '@/types'
 import { goalApi, taskApi, authApi, activityApi } from '@/lib/api'
 
 interface GoalContextValue {
@@ -12,6 +12,7 @@ interface GoalContextValue {
   isLoading: boolean
   isAuthenticated: boolean
   isInitialized: boolean
+  user: User | null
 
   // Auth
   checkAuth: () => Promise<boolean>
@@ -42,25 +43,28 @@ export function GoalProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
 
+  const [user, setUser] = useState<User | null>(null)
+
   const checkAuth = useCallback(async (): Promise<boolean> => {
     const token = localStorage.getItem('pathieve_token')
     if (!token) {
       setIsAuthenticated(false)
+      setUser(null)
       setIsInitialized(true)
       return false
     }
     try {
-      await authApi.me()
+      const me = await authApi.me()
       setIsAuthenticated(true)
+      setUser(me)
       // バックグラウンドで今日のログイン記録をつける (エラーは無視して良い)
       activityApi.recordLogin().catch(() => {})
-      // Note: isInitialized is set AFTER refreshData in page.tsx or here if we want but 
-      // let's be careful. Actually, let's let the caller decide or set it here if simple.
-      // Better: let's handle the "full init" in checkAuth for simplicity.
+      setIsInitialized(true)
       return true
     } catch {
       localStorage.removeItem('pathieve_token')
       setIsAuthenticated(false)
+      setUser(null)
       setIsInitialized(true)
       return false
     }
@@ -202,7 +206,7 @@ export function GoalProvider({ children }: { children: ReactNode }) {
   return (
     <GoalContext.Provider
       value={{
-        goals, tasks, isLoading, isAuthenticated, isInitialized,
+        goals, tasks, isLoading, isAuthenticated, isInitialized, user,
         checkAuth, logout, refreshData,
         createGoal, updateGoal, deleteGoal,
         createTask, updateTask, deleteTask, cancelRecurrence, reorderTasks,

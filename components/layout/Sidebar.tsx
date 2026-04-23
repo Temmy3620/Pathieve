@@ -59,6 +59,18 @@ const navItems = [
       </svg>
     )
   },
+  {
+    href: '/userlist',
+    label: 'User List',
+    icon: (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+    )
+  }
 ]
 
 function TaskBoardSubMenu({ monthGoals }: { monthGoals: any[] }) {
@@ -90,7 +102,7 @@ export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const { mode, toggleMode } = useTheme()
-  const { goals, logout } = useGoals()
+  const { goals, logout, user } = useGoals()
 
   const monthGoals = goals.filter((g) => g.level === '1month')
 
@@ -127,7 +139,13 @@ export default function Sidebar() {
 
       {/* Nav */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '10px 0' }}>
-        {navItems.map(({ href, label, icon }) => {
+        {navItems.filter(item => {
+          if (user?.is_admin) {
+            return item.href === '/userlist' || item.href === '/settings'
+          } else {
+            return item.href !== '/userlist'
+          }
+        }).map(({ href, label, icon }) => {
           const active = pathname.startsWith(href)
           return (
             <div key={href}>
@@ -146,7 +164,7 @@ export default function Sidebar() {
                 {label}
               </Link>
 
-              {href === '/taskboard' && active && monthGoals.length > 0 && (
+              {href === '/taskboard' && active && monthGoals.length > 0 && !user?.is_admin && (
                 <Suspense fallback={<div style={{ paddingLeft: 32, fontSize: '0.76rem', color: 'var(--text-muted)' }}>読み込み中...</div>}>
                   <TaskBoardSubMenu monthGoals={monthGoals} />
                 </Suspense>

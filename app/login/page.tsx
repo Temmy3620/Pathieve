@@ -25,7 +25,13 @@ export default function LoginPage() {
       const token = await authApi.login(email, password)
       localStorage.setItem('pathieve_token', token.access_token)
       document.cookie = `pathieve_token=${token.access_token}; path=/; max-age=604800; samesite=lax`
-      router.push('/pathmap')
+      
+      const user = await authApi.me()
+      if (user.is_admin) {
+        router.push('/userlist')
+      } else {
+        router.push('/pathmap')
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'ログインに失敗しました')
     } finally {

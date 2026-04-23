@@ -22,6 +22,7 @@ export async function GET(request: Request) {
         id: true,
         email: true,
         is_active: true,
+        is_admin: true,
         created_at: true,
       }
     })

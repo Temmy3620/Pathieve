@@ -5,6 +5,7 @@ import { seedSideHustleUser } from './seeds/02_side_hustle'
 import { seedLearningUser } from './seeds/03_learning'
 import { seedFitnessUser } from './seeds/04_fitness'
 import { seedFinanceUser } from './seeds/05_finance'
+import { seedAdminUser } from './seeds/99_admin'
 
 const prisma = new PrismaClient()
 
@@ -17,6 +18,7 @@ async function main() {
   await seedLearningUser(prisma)
   await seedFitnessUser(prisma)
   await seedFinanceUser(prisma)
+  await seedAdminUser(prisma)
 
   console.log('[Seed] ✅ All seeds finished successfully.')
 }
