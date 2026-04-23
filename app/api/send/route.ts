@@ -3,10 +3,10 @@ import { EmailTemplate } from '@/components/email/EmailTemplate';
 import { NextResponse } from 'next/server';
 import * as React from 'react';
 
-// 念のため API Key がない場合はエラーになるように設定
-const resend = new Resend(process.env.RESEND_API_KEY);
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
   try {
     const body = await request.json();
     const { to, subject, body: emailBody } = body;

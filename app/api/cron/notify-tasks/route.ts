@@ -4,7 +4,7 @@ import { Resend } from 'resend';
 import { EmailTemplate } from '@/components/email/EmailTemplate';
 import * as React from 'react';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   return handleCronRequest(request);
@@ -15,6 +15,7 @@ export async function POST(request: Request) {
 }
 
 async function handleCronRequest(request: Request) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
   try {
     // 1. セキュリティ検証
     // Authorization ヘッダー または クエリパラメータから CRON_SECRET を確認
