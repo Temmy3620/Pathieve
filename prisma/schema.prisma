@@ -16,12 +16,23 @@ model User {
   hashed_password String   @db.VarChar(255)
   is_active       Boolean  @default(true)
   is_admin        Boolean  @default(false)
+  theme_mode      String   @default("light") @db.VarChar(50)
+  theme_accent    String   @default("indigo") @db.VarChar(50)
   created_at      DateTime @default(now())
 
   goals Goal[]
   activities Activity[]
 
   @@map("users")
+}
+
+model SystemSetting {
+  id                String   @id @default("global") @db.VarChar(36)
+  home_theme_mode   String   @default("light") @db.VarChar(50)
+  home_theme_accent String   @default("indigo") @db.VarChar(50)
+  updated_at        DateTime @updatedAt
+
+  @@map("system_settings")
 }
 
 model Goal {

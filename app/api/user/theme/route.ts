@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { verifyToken, extractBearerToken } from '@/lib/session'
 
-export async function GET(request: Request) {
+export async function PATCH(request: Request) {
   try {
     const authHeader = request.headers.get('authorization')
     const token = await extractBearerToken(authHeader)
@@ -16,26 +16,30 @@ export async function GET(request: Request) {
       return NextResponse.json({ detail: 'Could not validate credentials' }, { status: 401 })
     }
 
-    const user = await prisma.user.findUnique({
+    const body = await request.json()
+    const { theme_mode, theme_accent } = body
+
+    if (!theme_mode && !theme_accent) {
+      return NextResponse.json({ detail: 'No theme fields provided' }, { status: 400 })
+    }
+
+    const updateData: any = {}
+    if (theme_mode) updateData.theme_mode = theme_mode
+    if (theme_accent) updateData.theme_accent = theme_accent
+
+    const user = await prisma.user.update({
       where: { id: payload.sub as string },
+      data: updateData,
       select: {
         id: true,
-        email: true,
-        is_active: true,
-        is_admin: true,
         theme_mode: true,
         theme_accent: true,
-        created_at: true,
       }
     })
 
-    if (!user || !user.is_active) {
-      return NextResponse.json({ detail: 'User not found' }, { status: 404 })
-    }
-
     return NextResponse.json(user)
   } catch (error: any) {
-    console.error('Me error:', error)
+    console.error('Update user theme error:', error)
     return NextResponse.json({ detail: 'Internal Server Error' }, { status: 500 })
   }
 }

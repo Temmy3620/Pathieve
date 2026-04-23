@@ -45,7 +45,16 @@ export interface User {
   email: string
   is_active: boolean
   is_admin: boolean
+  theme_mode: ThemeMode
+  theme_accent: AccentColor
   created_at: string
+}
+
+export interface SystemSetting {
+  id: string
+  home_theme_mode: ThemeMode
+  home_theme_accent: AccentColor
+  updated_at: string
 }
 
 /** Auth token response from FastAPI */

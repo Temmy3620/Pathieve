@@ -1,58 +1,100 @@
 'use client'
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useMemo } from 'react'
+import { usePathname } from 'next/navigation'
 import type { ThemeMode, AccentColor, AppSettings } from '@/types'
 
 interface ThemeContextValue {
   mode: ThemeMode
   accent: AccentColor
+  globalMode: ThemeMode
+  globalAccent: AccentColor
   toggleMode: () => void
   setAccent: (accent: AccentColor) => void
+  setTheme: (mode: ThemeMode, accent: AccentColor) => void
+  setGlobalTheme: (mode: ThemeMode, accent: AccentColor) => void
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
   mode: 'light',
   accent: 'indigo',
+  globalMode: 'light',
+  globalAccent: 'indigo',
   toggleMode: () => {},
   setAccent: () => {},
+  setTheme: () => {},
+  setGlobalTheme: () => {},
 })
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<ThemeMode>('light')
-  const [accent, setAccentState] = useState<AccentColor>('indigo')
+// Public pages that should always use the global theme
+const PUBLIC_PAGES = ['/', '/login', '/register', '/reset-password']
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('pathieve_settings')
-    if (saved) {
-      try {
-        const settings: AppSettings = JSON.parse(saved)
-        setMode(settings.mode)
-        setAccentState(settings.accent)
-      } catch (_) {}
-    }
-  }, [])
+export function ThemeProvider({ 
+  children, 
+  initialGlobalTheme 
+}: { 
+  children: ReactNode
+  initialGlobalTheme?: AppSettings
+}) {
+  const pathname = usePathname()
+  const isPublicPage = PUBLIC_PAGES.includes(pathname)
 
-  // Apply to <html> element
+  // Global theme (for public pages)
+  const [globalMode, setGlobalModeState] = useState<ThemeMode>(initialGlobalTheme?.mode || 'light')
+  const [globalAccent, setGlobalAccentState] = useState<AccentColor>(initialGlobalTheme?.accent || 'indigo')
+
+  // User theme (for authenticated pages)
+  const [userMode, setUserMode] = useState<ThemeMode>('light')
+  const [userAccent, setUserAccent] = useState<AccentColor>('indigo')
+
+  // The active theme depends on the route
+  const mode = isPublicPage ? globalMode : userMode
+  const accent = isPublicPage ? globalAccent : userAccent
+
+  // Apply to <html> element whenever mode or accent changes
   useEffect(() => {
     const html = document.documentElement
     html.setAttribute('data-theme', mode)
     html.setAttribute('data-accent', accent === 'indigo' ? '' : accent)
-    localStorage.setItem(
-      'pathieve_settings',
-      JSON.stringify({ mode, accent }),
-    )
   }, [mode, accent])
 
-  const toggleMode = () =>
-    setMode((prev) => (prev === 'light' ? 'dark' : 'light'))
+  const toggleMode = useCallback(() => {
+    if (isPublicPage) {
+      setGlobalModeState((prev) => prev === 'light' ? 'dark' : 'light')
+    } else {
+      setUserMode((prev) => prev === 'light' ? 'dark' : 'light')
+    }
+  }, [isPublicPage])
 
-  const setAccent = (a: AccentColor) => setAccentState(a)
+  const setAccent = useCallback((a: AccentColor) => {
+    if (isPublicPage) {
+      setGlobalAccentState(a)
+    } else {
+      setUserAccent(a)
+    }
+  }, [isPublicPage])
+
+  const setTheme = useCallback((m: ThemeMode, a: AccentColor) => {
+    setUserMode(m)
+    setUserAccent(a)
+  }, [])
+
+  const setGlobalTheme = useCallback((m: ThemeMode, a: AccentColor) => {
+    setGlobalModeState(m)
+    setGlobalAccentState(a)
+  }, [])
+
+  const contextValue = useMemo(() => ({
+    mode, accent, 
+    globalMode, globalAccent,
+    toggleMode, setAccent, setTheme, setGlobalTheme 
+  }), [mode, accent, globalMode, globalAccent, toggleMode, setAccent, setTheme, setGlobalTheme])
 
   return (
-    <ThemeContext.Provider value={{ mode, accent, toggleMode, setAccent }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   )
 }
 
 export const useTheme = () => useContext(ThemeContext)
+

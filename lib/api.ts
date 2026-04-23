@@ -140,6 +140,12 @@ export const taskApi = {
 export const userApi = {
   resetData: (): Promise<void> =>
     request('/api/user/reset', { method: 'DELETE' }),
+    
+  updateTheme: (theme_mode?: string, theme_accent?: string): Promise<User> =>
+    request('/api/user/theme', {
+      method: 'PATCH',
+      body: JSON.stringify({ theme_mode, theme_accent }),
+    }),
 }
 
 // ── Achievement ──────────────────────────
@@ -168,4 +174,17 @@ export const activityApi = {
 export const adminApi = {
   getUsers: (): Promise<any[]> =>
     request('/api/admin/users'),
+
+  updateSystemSettings: (home_theme_mode?: string, home_theme_accent?: string): Promise<any> =>
+    request('/api/admin/settings', {
+      method: 'PATCH',
+      body: JSON.stringify({ home_theme_mode, home_theme_accent }),
+    }),
+}
+
+// ── System ───────────────────────────────────────
+
+export const systemApi = {
+  getGlobalSettings: (): Promise<any> =>
+    request('/api/settings/global'),
 }

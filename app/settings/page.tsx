@@ -34,8 +34,8 @@ function SettingRow({ title, description, action }: { title: string; description
 
 export default function SettingsPage() {
   const router = useRouter()
-  const { mode, accent, toggleMode, setAccent } = useTheme()
-  const { checkAuth, logout } = useGoals()
+  const { mode, accent, toggleMode, setAccent, globalMode, globalAccent, setGlobalTheme } = useTheme()
+  const { checkAuth, logout, user } = useGoals()
   const [resetModal, setResetModal] = useState(false)
   const [withdrawModal, setWithdrawModal] = useState(false)
   const [resetLoading, setResetLoading] = useState(false)
@@ -47,6 +47,21 @@ export default function SettingsPage() {
       if (!ok) router.replace('/login')
     })()
   }, [checkAuth, router])
+
+  useEffect(() => {
+    let mounted = true;
+    if (user?.is_admin) {
+      import('@/lib/api').then(({ systemApi }) => {
+        systemApi.getGlobalSettings().then(globalData => {
+          if (mounted && globalData) {
+            setGlobalTheme(globalData.home_theme_mode, globalData.home_theme_accent)
+          }
+        }).catch(console.error)
+      })
+    }
+    return () => { mounted = false };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.is_admin]) // Run only when user.is_admin changes
 
   const handleReset = async () => {
     setResetLoading(true)
@@ -70,6 +85,48 @@ export default function SettingsPage() {
     finally { setWithdrawLoading(false) }
   }
 
+  const handleModeChange = async () => {
+    const nextMode = mode === 'light' ? 'dark' : 'light'
+    toggleMode() // Update context/UI immediately
+    try {
+      const { userApi } = await import('@/lib/api')
+      await userApi.updateTheme(nextMode, accent)
+    } catch (err) {
+      console.error('Failed to update theme mode', err)
+    }
+  }
+
+  const handleAccentChange = async (newAccent: AccentColor) => {
+    setAccent(newAccent) // Update context/UI immediately
+    try {
+      const { userApi } = await import('@/lib/api')
+      await userApi.updateTheme(mode, newAccent)
+    } catch (err) {
+      console.error('Failed to update theme accent', err)
+    }
+  }
+
+  const handleGlobalModeChange = async () => {
+    const nextMode = globalMode === 'light' ? 'dark' : 'light'
+    setGlobalTheme(nextMode, globalAccent)
+    try {
+      const { adminApi } = await import('@/lib/api')
+      await adminApi.updateSystemSettings(nextMode, globalAccent)
+    } catch (err) {
+      console.error('Failed to update global theme mode', err)
+    }
+  }
+
+  const handleGlobalAccentChange = async (newAccent: AccentColor) => {
+    setGlobalTheme(globalMode, newAccent)
+    try {
+      const { adminApi } = await import('@/lib/api')
+      await adminApi.updateSystemSettings(globalMode, newAccent)
+    } catch (err) {
+      console.error('Failed to update global theme accent', err)
+    }
+  }
+
   return (
     <AppShell>
       <div style={{ padding: '28px 24px', minHeight: '100vh' }}>
@@ -90,7 +147,7 @@ export default function SettingsPage() {
             {/* Accent colors */}
             <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
               {ACCENT_OPTIONS.map((opt) => (
-                <button key={opt.value} onClick={() => setAccent(opt.value)} title={opt.label} style={{
+                <button key={opt.value} onClick={() => handleAccentChange(opt.value)} title={opt.label} style={{
                   width: 36, height: 36, borderRadius: '50%',
                   background: opt.color,
                   border: accent === opt.value ? `3px solid var(--text-primary)` : '3px solid transparent',
@@ -104,7 +161,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Mode toggle */}
-            <button onClick={toggleMode} style={{
+            <button onClick={handleModeChange} style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '8px 18px', borderRadius: 20,
               border: '1.5px solid var(--border)', background: 'var(--bg-raised)',
@@ -138,6 +195,67 @@ export default function SettingsPage() {
               )}
             </button>
           </div>
+
+          {user?.is_admin && (
+            <div style={{ padding: '20px 0', borderBottom: '1px solid var(--bg-muted)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '0 0 3px' }}>
+                <p style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)', margin: 0 }}>ホーム画面設定</p>
+                <span style={{ padding: '2px 6px', borderRadius: 6, background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', fontSize: '0.7rem', fontWeight: 700 }}>管理者専用</span>
+              </div>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: '0 0 14px' }}>未ログインのユーザーに表示されるホーム画面のカラーテーマを設定します。</p>
+
+              {/* Accent colors */}
+              <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+                {ACCENT_OPTIONS.map((opt) => (
+                  <button key={`global-${opt.value}`} onClick={() => handleGlobalAccentChange(opt.value)} title={opt.label} style={{
+                    width: 36, height: 36, borderRadius: '50%',
+                    background: opt.color,
+                    border: globalAccent === opt.value ? `3px solid var(--text-primary)` : '3px solid transparent',
+                    cursor: 'pointer',
+                    outline: globalAccent === opt.value ? `2px solid ${opt.color}` : 'none',
+                    outlineOffset: 2,
+                    transition: 'all 0.15s',
+                    transform: globalAccent === opt.value ? 'scale(1.15)' : 'scale(1)',
+                  }} />
+                ))}
+              </div>
+
+              {/* Mode toggle */}
+              <button onClick={handleGlobalModeChange} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                padding: '8px 18px', borderRadius: 20,
+                border: '1.5px solid var(--border)', background: 'var(--bg-raised)',
+                color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 600,
+                cursor: 'pointer', fontFamily: 'inherit',
+              }}>
+                {globalMode === 'dark' ? (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--warning)' }}>
+                      <circle cx="12" cy="12" r="5" fill="currentColor" fillOpacity={0.3} />
+                      <g opacity={0.6}>
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                      </g>
+                    </svg>
+                    ライトモードに切替
+                  </>
+                ) : (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" fillOpacity={0.25} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, color: 'var(--accent)' }}>
+                      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                    ダークモードに切替
+                  </>
+                )}
+              </button>
+            </div>
+          )}
 
           <SettingRow
             title="データリセット"

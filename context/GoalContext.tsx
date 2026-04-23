@@ -5,6 +5,7 @@ import {
 } from 'react'
 import type { Goal, Task, WizardState, User } from '@/types'
 import { goalApi, taskApi, authApi, activityApi } from '@/lib/api'
+import { useTheme } from '@/context/ThemeContext'
 
 interface GoalContextValue {
   goals: Goal[]
@@ -42,6 +43,7 @@ export function GoalProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
+  const { setTheme } = useTheme()
 
   const [user, setUser] = useState<User | null>(null)
 
@@ -57,6 +59,12 @@ export function GoalProvider({ children }: { children: ReactNode }) {
       const me = await authApi.me()
       setIsAuthenticated(true)
       setUser(me)
+      
+      // テーマを適用する
+      if (me.theme_mode && me.theme_accent) {
+        setTheme(me.theme_mode, me.theme_accent)
+      }
+
       // バックグラウンドで今日のログイン記録をつける (エラーは無視して良い)
       activityApi.recordLogin().catch(() => {})
       setIsInitialized(true)
