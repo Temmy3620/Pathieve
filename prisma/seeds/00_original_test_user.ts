@@ -1,24 +1,24 @@
 import { PrismaClient } from '@prisma/client'
 import bcryptjs from 'bcryptjs'
 
-const SEED_EMAIL = 'seed@pathieve.dev'
-const SEED_PASSWORD = 'Pathieve123!'
+const TEST_EMAIL = process.env.TEST_EMAIL || ''
+const TEST_PASSWORD = process.env.TEST_PASSWORD || ''
 
 export async function seedOriginalTestUser(prisma: PrismaClient) {
   const existingUser = await prisma.user.findUnique({
-    where: { email: SEED_EMAIL },
+    where: { email: TEST_EMAIL },
   })
 
   if (existingUser) {
-    console.log('[Seed] User already seeded:', SEED_EMAIL)
+    console.log('[Seed] User already seeded:', TEST_EMAIL)
     return
   }
 
-  const hashedPassword = await bcryptjs.hash(SEED_PASSWORD, 10)
+  const hashedPassword = await bcryptjs.hash(TEST_PASSWORD, 10)
 
   const user = await prisma.user.create({
     data: {
-      email: SEED_EMAIL,
+      email: TEST_EMAIL,
       hashed_password: hashedPassword,
       is_active: true,
     },
@@ -161,5 +161,5 @@ export async function seedOriginalTestUser(prisma: PrismaClient) {
     }
   })
 
-  console.log('[Seed] ✅ Seeded test user:', SEED_EMAIL)
+  console.log('[Seed] ✅ Seeded test user:', TEST_EMAIL)
 }
