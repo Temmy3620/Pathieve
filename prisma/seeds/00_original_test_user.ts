@@ -120,7 +120,7 @@ export async function seedOriginalTestUser(prisma: PrismaClient) {
     },
   })
 
-  await prisma.goal.create({
+  const goal1month = await prisma.goal.create({
     data: {
       user_id: user.id,
       title: '毎日30分の英語学習習慣を確立する',
@@ -128,12 +128,37 @@ export async function seedOriginalTestUser(prisma: PrismaClient) {
       parent_id: g1yc.id,
       tasks: {
         create: [
-          { title: '英単語アプリで1日100問', memo: 'AnkiまたはDuolingo', progress: 20 },
           { title: 'YouTube英語チャンネルを毎日視聴', memo: 'TED・BBCなど', progress: 50 },
           { title: 'TOEIC 公式問題集パート5を解く', memo: '1週間で30問目標', progress: 0 },
         ],
       },
     },
+  })
+
+  // 定期タスクのテンプレート作成
+  const templateTask = await prisma.task.create({
+    data: {
+      goal_id: goal1month.id,
+      title: '英単語アプリで1日100問',
+      memo: 'AnkiまたはDuolingo',
+      progress: 0,
+      is_template: true,
+      recurrence: 'daily',
+      notification_time: '08:00',
+    }
+  })
+
+  // 定期タスクの初回インスタンス作成
+  await prisma.task.create({
+    data: {
+      goal_id: goal1month.id,
+      title: '英単語アプリで1日100問',
+      memo: 'AnkiまたはDuolingo',
+      progress: 20,
+      is_template: false,
+      template_id: templateTask.id,
+      notification_time: '08:00',
+    }
   })
 
   console.log('[Seed] ✅ Seeded test user:', SEED_EMAIL)
