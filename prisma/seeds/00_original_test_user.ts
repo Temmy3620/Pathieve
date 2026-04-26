@@ -152,12 +152,12 @@ export async function seedOriginalTestUser(prisma: PrismaClient) {
   await prisma.task.create({
     data: {
       goal_id: goal1month.id,
-      title: '英単語アプリで1日100問',
+      title: '英単語アプリで1日10問',
       memo: 'AnkiまたはDuolingo',
       progress: 20,
       is_template: false,
       template_id: templateTask.id,
-      notification_time: '08:00',
+      notification_time: '23:35',
     }
   })
 
