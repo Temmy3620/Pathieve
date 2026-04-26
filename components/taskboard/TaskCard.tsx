@@ -20,6 +20,8 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
   const [editTitle, setEditTitle] = useState(task.title)
   const [editMemo, setEditMemo] = useState(task.memo)
   const [editProgress, setEditProgress] = useState(task.progress)
+  const [editNotificationTime, setEditNotificationTime] = useState(task.notification_time || '09:00')
+  const [editNotificationDays, setEditNotificationDays] = useState<string[]>(task.notification_days ? task.notification_days.split(',') : [])
   const [saving, setSaving] = useState(false)
 
   const {
@@ -39,7 +41,16 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
   const handleSave = async () => {
     setSaving(true)
     try {
-      await updateTask(task.id, { title: editTitle.trim(), memo: editMemo, progress: editProgress })
+      const notifDays = editNotificationDays.length > 0 ? editNotificationDays.join(',') : undefined;
+      await updateTask(task.id, { 
+        title: editTitle.trim(), 
+        memo: editMemo, 
+        progress: editProgress,
+        ...(isRecurring ? {
+          notification_time: editNotificationTime,
+          notification_days: notifDays
+        } : {})
+      })
       setEditModal(false)
     } finally { setSaving(false) }
   }
@@ -150,7 +161,14 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
             )}
             
             <button
-              onClick={() => { setEditTitle(task.title); setEditMemo(task.memo); setEditProgress(task.progress); setEditModal(true) }}
+              onClick={() => { 
+                setEditTitle(task.title); 
+                setEditMemo(task.memo); 
+                setEditProgress(task.progress); 
+                setEditNotificationTime(task.notification_time || '09:00');
+                setEditNotificationDays(task.notification_days ? task.notification_days.split(',') : []);
+                setEditModal(true) 
+              }}
             title="編集"
             style={{
               flexShrink: 0, width: 30, height: 30,
@@ -202,16 +220,108 @@ export default function TaskCard({ task, isOverlay }: TaskCardProps) {
               <ProgressBar value={editProgress} showValue={false} />
             </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-              <input type="checkbox" id="recurring-complete" 
-                checked={editProgress === 100}
-                onChange={(e) => setEditProgress(e.target.checked ? 100 : 0)}
-                style={{ width: 18, height: 18, accentColor: 'var(--accent)', cursor: 'pointer' }}
-              />
-              <label htmlFor="recurring-complete" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', cursor: 'pointer' }}>
-                このタスクを完了にする
-              </label>
-            </div>
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                <input type="checkbox" id="recurring-complete" 
+                  checked={editProgress === 100}
+                  onChange={(e) => setEditProgress(e.target.checked ? 100 : 0)}
+                  style={{ width: 18, height: 18, accentColor: 'var(--accent)', cursor: 'pointer' }}
+                />
+                <label htmlFor="recurring-complete" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', cursor: 'pointer' }}>
+                  このタスクを完了にする
+                </label>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 14 }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>通知時間</label>
+                <div style={{ position: 'relative', width: '100%' }}>
+                  <select
+                    value={editNotificationTime}
+                    onChange={(e) => setEditNotificationTime(e.target.value)}
+                    style={{
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                      width: '100%',
+                      padding: '10px 36px 10px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border)',
+                      background: 'var(--bg-panel)',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.9rem',
+                      outline: 'none',
+                      cursor: 'pointer',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                      transition: 'border-color 0.2s, box-shadow 0.2s',
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.outline = '2px solid color-mix(in srgb, var(--accent) 50%, transparent)'
+                      e.target.style.outlineOffset = '1px'
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.outline = 'none'
+                    }}
+                  >
+                    {Array.from({ length: 24 * 4 }).map((_, i) => {
+                      const h = Math.floor(i / 4).toString().padStart(2, '0');
+                      const m = ((i % 4) * 15).toString().padStart(2, '0');
+                      const time = `${h}:${m}`;
+                      return <option key={time} value={time}>{time}</option>;
+                    })}
+                  </select>
+                  <svg
+                    width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                    style={{
+                      position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                      pointerEvents: 'none', color: 'var(--text-muted)'
+                    }}
+                  >
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                </div>
+              </div>
+
+              {task.recurrence === 'weekly' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 14 }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>通知する曜日</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {[
+                      { label: '日', val: '0' }, { label: '月', val: '1' },
+                      { label: '火', val: '2' }, { label: '水', val: '3' },
+                      { label: '木', val: '4' }, { label: '金', val: '5' },
+                      { label: '土', val: '6' }
+                    ].map((day) => {
+                      const isSelected = editNotificationDays.includes(day.val);
+                      return (
+                        <label key={day.val} style={{
+                          display: 'flex', alignItems: 'center', gap: 4,
+                          fontSize: '0.85rem', color: isSelected ? 'var(--accent)' : 'var(--text-muted)',
+                          cursor: 'pointer', padding: '6px 12px', borderRadius: 8,
+                          background: isSelected ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'var(--bg-raised)',
+                          border: `1.5px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}`,
+                          transition: 'all 0.2s',
+                          fontWeight: isSelected ? 600 : 500
+                        }}>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setEditNotificationDays(prev => [...prev, day.val])
+                              } else {
+                                setEditNotificationDays(prev => prev.filter(d => d !== day.val))
+                              }
+                            }}
+                            style={{ display: 'none' }}
+                          />
+                          {day.label}
+                        </label>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </Modal>

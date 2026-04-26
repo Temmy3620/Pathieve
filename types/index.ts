@@ -110,6 +110,8 @@ export interface UpdateTaskPayload {
   memo?: string
   progress?: number
   order?: number
+  notification_time?: string | null
+  notification_days?: string | null
 }
 
 export interface UpdateGoalPayload {
