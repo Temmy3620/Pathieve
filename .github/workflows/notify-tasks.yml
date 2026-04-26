@@ -1,4 +1,4 @@
-name: Periodic Task Notifications
+name: Test Periodic Task Notifications
 
 on:
   schedule:
@@ -15,6 +15,6 @@ jobs:
         run: |
           # ユーザー環境に合わせて、GitHub Secretsに API_BASE_URL と CRON_SECRET を設定する必要があります。
           # API_BASE_URL 例: https://pathieve.vercel.app
-          curl -X POST "${{ secrets.API_BASE_URL }}/api/cron/notify-tasks" \
+          curl -X POST "${{ secrets.TEST_API_BASE_URL }}/api/cron/notify-tasks" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json"
