@@ -50,6 +50,7 @@ export function GoalProvider({ children }: { children: ReactNode }) {
   const checkAuth = useCallback(async (): Promise<boolean> => {
     const token = localStorage.getItem('pathieve_token')
     if (!token) {
+      document.cookie = 'pathieve_token=; path=/; max-age=0'
       setIsAuthenticated(false)
       setUser(null)
       setIsInitialized(true)
@@ -71,6 +72,7 @@ export function GoalProvider({ children }: { children: ReactNode }) {
       return true
     } catch {
       localStorage.removeItem('pathieve_token')
+      document.cookie = 'pathieve_token=; path=/; max-age=0'
       setIsAuthenticated(false)
       setUser(null)
       setIsInitialized(true)
